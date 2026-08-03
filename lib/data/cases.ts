@@ -8,7 +8,7 @@ const cases: Case[] = [
   {
     id: 'c1', name: 'Andi Wijaya', mrn: 'MRN-778210', age: 54, gender: 'Laki-laki', examDate: '24 Jul 2026',
     status: 'perlu_review', severity: 'tinggi',
-    tumorType: 'Glioblastoma', grade: 'WHO Grade IV', confidence: 94, volume: '38.4',
+    tumorType: 'pituitari', grade: 'WHO Grade IV', confidence: 94, volume: '38.4',
     location: 'Lobus Temporal Kanan', edema: 'Luas, edema vasogenik signifikan',
     narrative: 'Terdeteksi massa heterogen dengan enhancement ireguler pada lobus temporal kanan, disertai area nekrosis sentral dan edema perilesi yang luas. Pola pertumbuhan dan karakteristik sinyal sangat sesuai dengan glioblastoma (WHO Grade IV). Disarankan korelasi klinis dan pertimbangan biopsi/reseksi segera.',
     review: 'none',
