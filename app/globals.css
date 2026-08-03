@@ -1,0 +1,79 @@
+@import "tailwindcss";
+
+@theme {
+  --font-sans: var(--font-sans), ui-sans-serif, system-ui, sans-serif;
+  --font-mono: var(--font-mono), ui-monospace, monospace;
+
+  /* brand blue, anchored on #1D4ED8 */
+  --color-brand-50: #EFF6FF;
+  --color-brand-100: #DBEAFE;
+  --color-brand-200: #BFDBFE;
+  --color-brand-300: #93C5FD;
+  --color-brand-400: #60A5FA;
+  --color-brand-500: #3B82F6;
+  --color-brand-600: #1D4ED8;
+  --color-brand-700: #1E40AF;
+  --color-brand-800: #1E3A8A;
+  --color-brand-900: #0B3B8F;
+
+  /* semantic status colors */
+  --color-success-100: #DCFCE7;
+  --color-success-50: #F0FDF4;
+  --color-success-200: #BBF7D0;
+  --color-success-700: #15803D;
+  --color-success-900: #14532D;
+
+  --color-warning-100: #FEF3C7;
+  --color-warning-700: #B45309;
+
+  --color-danger-50: #FEF2F2;
+  --color-danger-100: #FEE2E2;
+  --color-danger-200: #FECACA;
+  --color-danger-700: #B91C1C;
+  --color-danger-900: #7F1D1D;
+
+  --color-info-100: #F5F3FF;
+  --color-info-700: #7C3AED;
+
+  /* dark theater surface, used only in the MRI viewer stage */
+  --color-theater-950: #0B0B0D;
+  --color-theater-900: #111114;
+  --color-theater-800: #1A1A1F;
+  --color-theater-border: #2A2A30;
+
+  --shadow-card: 0 1px 3px rgba(15, 23, 42, 0.06);
+  --shadow-elevated: 0 12px 28px rgba(15, 23, 42, 0.14);
+  --shadow-cta: 0 6px 16px rgba(29, 78, 216, 0.22);
+}
+
+::-webkit-scrollbar { width: 8px; height: 8px; }
+::-webkit-scrollbar-thumb { background: #CBD5E1; border-radius: 8px; }
+
+@keyframes bc-spin { to { transform: rotate(360deg); } }
+@keyframes bc-pulse { 0%, 100% { opacity: 1; } 50% { opacity: .45; } }
+@keyframes bc-scan {
+  0% { transform: translateY(-10%); opacity: 0; }
+  10% { opacity: .35; }
+  90% { opacity: .35; }
+  100% { transform: translateY(110%); opacity: 0; }
+}
+@keyframes bc-fade-in {
+  from { opacity: 0; transform: translateY(4px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+@keyframes bc-blob-in {
+  from { opacity: 0; transform: translate(-50%, -50%) scale(0.9); filter: blur(16px); }
+  to { opacity: var(--bc-blob-opacity, 1); transform: translate(-50%, -50%) scale(1); }
+}
+
+.animate-bc-spin { animation: bc-spin 0.9s linear infinite; }
+.animate-bc-pulse { animation: bc-pulse 1.6s ease-in-out infinite; }
+.animate-bc-scan { animation: bc-scan 3.2s ease-in-out infinite; }
+.animate-bc-fade-in { animation: bc-fade-in .25s ease-out; }
+
+@media print {
+  body * { visibility: hidden; }
+  #bc-print-area, #bc-print-area * { visibility: visible; }
+  #bc-print-area { position: absolute; left: 0; top: 0; width: 100%; height: auto !important; overflow: visible !important; }
+  #bc-print-area button, #bc-print-area input { display: none !important; }
+}
