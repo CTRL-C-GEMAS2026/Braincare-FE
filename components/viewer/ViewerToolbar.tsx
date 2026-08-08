@@ -1,4 +1,5 @@
 import clsx from 'clsx';
+import type { CaseDTO, XaiLayer } from '@/types/case';
 
 function Chip({
   on,
@@ -29,21 +30,21 @@ function Chip({
 }
 
 export function ViewerToolbar({
+  activeCase,
   layerSeg,
-  layerGradcam,
+  xaiLayer,
   onToggleSeg,
-  onToggleGradcam,
-  showGradcam,
+  onSelectXai,
   zoom,
   onZoomIn,
   onZoomOut,
   onZoomReset,
 }: {
+  activeCase: CaseDTO;
   layerSeg: boolean;
-  layerGradcam: boolean;
+  xaiLayer: XaiLayer;
   onToggleSeg: () => void;
-  onToggleGradcam: () => void;
-  showGradcam: boolean;
+  onSelectXai: (layer: 'gradcam' | 'attention') => void;
   zoom: number;
   onZoomIn: () => void;
   onZoomOut: () => void;
@@ -53,8 +54,21 @@ export function ViewerToolbar({
     <div className="flex flex-shrink-0 items-center justify-between bg-theater-900 px-5 py-3">
       <div className="flex gap-2.5">
         <Chip on={layerSeg} dotColor="#3B82F6" label="Segmentasi Tumor" onClick={onToggleSeg} />
-        {showGradcam && (
-          <Chip on={layerGradcam} dotColor="#F97316" label="Grad-CAM (XAI)" onClick={onToggleGradcam} />
+        {activeCase.gradcamUrl !== null && (
+          <Chip
+            on={xaiLayer === 'gradcam'}
+            dotColor="#F97316"
+            label="Grad-CAM (XAI)"
+            onClick={() => onSelectXai('gradcam')}
+          />
+        )}
+        {activeCase.attentionUrl !== null && (
+          <Chip
+            on={xaiLayer === 'attention'}
+            dotColor="#A855F7"
+            label="Attention Weight Map"
+            onClick={() => onSelectXai('attention')}
+          />
         )}
       </div>
       <div className="flex items-center gap-2">
