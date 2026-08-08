@@ -11,13 +11,25 @@ function useAuthenticatedImage(url: string | null): string | null {
     let cancelled = false;
     let objectUrl: string | null = null;
 
-    if (!url) return;
+    if (!url) {
+      // eslint-disable-next-line
+      setSrc(null);
+      return;
+    }
 
-    fetchBlob(url).then((blob) => {
-      if (cancelled || !blob) return;
-      objectUrl = URL.createObjectURL(blob);
-      setSrc(objectUrl);
-    });
+    fetchBlob(url)
+      .then((blob) => {
+        if (cancelled) return;
+        if (!blob) {
+          setSrc(null);
+          return;
+        }
+        objectUrl = URL.createObjectURL(blob);
+        setSrc(objectUrl);
+      })
+      .catch(() => {
+        if (!cancelled) setSrc(null);
+      });
 
     return () => {
       cancelled = true;
