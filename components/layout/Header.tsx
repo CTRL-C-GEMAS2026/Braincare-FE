@@ -36,7 +36,7 @@ export function Header() {
     : '';
 
   return (
-    <div className="flex h-15 h-[60px] flex-shrink-0 items-center justify-between border-b border-slate-200 px-7">
+    <div className="flex h-15 h-[60px] flex-shrink-0 items-center justify-between border-b border-slate-200 px-4 md:px-7">
       <div className="text-[17px] font-bold text-slate-900">{titleFor(pathname)}</div>
       <Dropdown
         trigger={({ toggle }) => (
@@ -46,7 +46,7 @@ export function Header() {
           >
             <div className="text-right">
               <div className="text-[13px] font-semibold text-slate-900">{profile?.name}</div>
-              <div className="text-[11px] text-slate-500">{profile?.hospital}</div>
+              <div className="hidden text-[11px] text-slate-500 md:block">{profile?.hospital}</div>
             </div>
             <div
               className="flex h-9 w-9 items-center justify-center rounded-full bg-cover bg-center bg-brand-100 text-[13px] font-bold text-brand-600"
