@@ -2,6 +2,9 @@ export type Severity = 'normal' | 'rendah' | 'sedang' | 'tinggi';
 export type CaseStatus = 'menunggu' | 'proses' | 'selesai' | 'perlu_review';
 export type ReviewState = 'agree' | 'disagree' | 'none';
 
+/** Peta XAI yang sedang ditampilkan di viewer -- saling eksklusif, lihat MriStage/ViewerToolbar. */
+export type XaiLayer = 'none' | 'gradcam' | 'attention';
+
 export interface Case {
   id: string;
   name: string;
@@ -26,6 +29,9 @@ export interface Case {
   /** null kalau berkas belum diunggah / belum diproses oleh backend */
   imageUrl: string | null;
   maskUrl: string | null;
+  /** null kalau peta XAI itu belum/tidak tersedia untuk kasus ini (mis. inferensi XAI gagal) */
+  gradcamUrl: string | null;
+  attentionUrl: string | null;
 }
 
 /** Case as returned by the API: raw enum fields plus the computed analyzing flag. */
