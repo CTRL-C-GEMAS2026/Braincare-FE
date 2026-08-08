@@ -51,8 +51,8 @@ export function ViewerToolbar({
   onZoomReset: () => void;
 }) {
   return (
-    <div className="flex flex-shrink-0 items-center justify-between bg-theater-900 px-5 py-3">
-      <div className="flex gap-2.5">
+    <div className="flex flex-shrink-0 flex-wrap items-center justify-between gap-y-2 bg-theater-900 px-5 py-3">
+      <div className="flex flex-wrap gap-2.5">
         <Chip on={layerSeg} dotColor="#3B82F6" label="Segmentasi Tumor" onClick={onToggleSeg} />
         {activeCase.gradcamUrl !== null && (
           <Chip

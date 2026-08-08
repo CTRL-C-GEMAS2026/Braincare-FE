@@ -41,14 +41,14 @@ export default function ViewerPage({ params }: { params: Promise<{ caseId: strin
     setXaiLayer((current) => (current === layer ? 'none' : layer));
 
   return (
-    <div id="bc-print-area" className="flex h-full flex-col">
+    <div id="bc-print-area" className="flex flex-col md:h-full">
       <ViewerHeader activeCase={activeCase} cameFrom={cameFrom} />
 
       {activeCase.isAnalyzing ? (
         <AnalyzingState />
       ) : (
-        <div className="flex min-h-0 flex-1">
-          <div className="flex min-w-0 flex-1 flex-col bg-theater-950">
+        <div className="flex flex-col md:min-h-0 md:flex-1 md:flex-row">
+          <div className="flex min-w-0 flex-col bg-theater-950 md:flex-1">
             <ViewerToolbar
               activeCase={activeCase}
               layerSeg={layerSeg}
@@ -60,7 +60,7 @@ export default function ViewerPage({ params }: { params: Promise<{ caseId: strin
               onZoomOut={() => setZoom((z) => Math.max(0.6, z - 0.2))}
               onZoomReset={() => setZoom(1)}
             />
-            <div className="relative flex flex-1">
+            <div className="relative flex h-[45vh] md:h-auto md:flex-1">
               <MriStage
                 activeCase={activeCase}
                 zoom={zoom}
@@ -76,7 +76,7 @@ export default function ViewerPage({ params }: { params: Promise<{ caseId: strin
             </div>
           </div>
 
-          <div className="flex w-[400px] flex-shrink-0 flex-col border-l border-slate-200">
+          <div className="flex w-full flex-shrink-0 flex-col border-t border-slate-200 md:w-[400px] md:border-l md:border-t-0">
             <NarrativePanel activeCase={activeCase} xaiLayer={xaiLayer} />
             <ReviewPanel
               activeCase={activeCase}

@@ -29,7 +29,7 @@ export function NarrativePanel({ activeCase, xaiLayer }: { activeCase: CaseDTO; 
   ].filter((c): c is { label: string; value: string } => c.value !== null);
 
   return (
-    <div className="flex-1 overflow-auto px-6 py-5.5 py-[22px]">
+    <div className="px-6 py-5.5 py-[22px] md:flex-1 md:overflow-auto">
       <div className="mb-2 text-[11px] font-bold uppercase tracking-wide text-slate-400">
         Narasi Klinis Otomatis (AI)
       </div>
