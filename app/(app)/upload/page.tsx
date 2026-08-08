@@ -90,8 +90,8 @@ export default function UploadPage() {
   }
 
   return (
-    <div className="flex h-full items-center justify-center px-8 py-8">
-      <div className="w-full max-w-[600px] rounded-2xl border border-slate-200 bg-white p-10 shadow-card">
+    <div className="flex h-full items-center justify-center px-4 py-6 md:px-8 md:py-8">
+      <div className="w-full max-w-[600px] rounded-2xl border border-slate-200 bg-white p-5 shadow-card md:p-10">
         <div className="mb-1.5 flex items-center gap-2">
           <div className="flex h-6.5 w-6.5 h-[26px] w-[26px] items-center justify-center rounded-lg bg-brand-50">
             <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#1D4ED8" strokeWidth="2">
@@ -130,7 +130,7 @@ export default function UploadPage() {
           </button>
         </div>
 
-        <div className="mb-5 grid grid-cols-2 gap-3">
+        <div className="mb-5 grid grid-cols-1 gap-3 sm:grid-cols-2">
           <div>
             <div className="mb-1.5 text-[13px] font-semibold text-slate-700">Nama Pasien</div>
             <input
@@ -172,7 +172,7 @@ export default function UploadPage() {
               <option value="Perempuan">Perempuan</option>
             </select>
           </div>
-          <div className="col-span-2">
+          <div className="sm:col-span-2">
             <div className="mb-1.5 text-[13px] font-semibold text-slate-700">Tanggal Periksa</div>
             <input
               value={examDate}
