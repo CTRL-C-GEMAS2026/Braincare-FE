@@ -10,6 +10,12 @@ function InfoCard({ label, value }: { label: string; value: string }) {
 }
 
 export function NarrativePanel({ activeCase }: { activeCase: CaseDTO }) {
+  const infoCards = [
+    { label: 'Lokasi', value: activeCase.location },
+    { label: 'Grading (WHO)', value: activeCase.grade },
+    { label: 'Edema / Mass Effect', value: activeCase.edema },
+  ].filter((c): c is { label: string; value: string } => c.value !== null);
+
   return (
     <div className="flex-1 overflow-auto px-6 py-5.5 py-[22px]">
       <div className="mb-2 text-[11px] font-bold uppercase tracking-wide text-slate-400">
@@ -21,15 +27,19 @@ export function NarrativePanel({ activeCase }: { activeCase: CaseDTO }) {
         <span className="font-mono font-semibold text-slate-700">{activeCase.confidence}%</span>
       </div>
 
-      <div className="mb-4.5 mb-[18px] rounded-xl border border-slate-200 bg-slate-50 p-4 text-[13.5px] leading-relaxed text-slate-800">
-        {activeCase.narrative}
-      </div>
+      {activeCase.narrative && (
+        <div className="mb-4.5 mb-[18px] rounded-xl border border-slate-200 bg-slate-50 p-4 text-[13.5px] leading-relaxed text-slate-800">
+          {activeCase.narrative}
+        </div>
+      )}
 
-      <div className="mb-5 grid grid-cols-2 gap-3">
-        <InfoCard label="Lokasi" value={activeCase.location} />
-        <InfoCard label="Grading (WHO)" value={activeCase.grade} />
-        <InfoCard label="Edema / Mass Effect" value={activeCase.edema} />
-      </div>
+      {infoCards.length > 0 && (
+        <div className="mb-5 grid grid-cols-2 gap-3">
+          {infoCards.map((c) => (
+            <InfoCard key={c.label} label={c.label} value={c.value} />
+          ))}
+        </div>
+      )}
 
       <div className="mb-2.5 text-[11px] font-bold uppercase tracking-wide text-slate-400">
         Keterangan Peta XAI

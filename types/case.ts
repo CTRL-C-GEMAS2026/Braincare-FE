@@ -12,17 +12,20 @@ export interface Case {
   status: CaseStatus;
   severity: Severity;
   tumorType: string;
-  grade: string;
+  grade: string | null;
   confidence: number;
   volume: number;
-  location: string;
-  edema: string;
-  narrative: string;
+  location: string | null;
+  edema: string | null;
+  narrative: string | null;
   review: ReviewState;
   reviewNote?: string;
   reviewedAt?: string;
   /** ISO 8601; when set and in the future, GET responses report isAnalyzing: true */
   analyzingUntil?: string | null;
+  /** null kalau berkas belum diunggah / belum diproses oleh backend */
+  imageUrl: string | null;
+  maskUrl: string | null;
 }
 
 /** Case as returned by the API: raw enum fields plus the computed analyzing flag. */
