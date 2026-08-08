@@ -57,7 +57,13 @@ export default function ViewerPage({ params }: { params: Promise<{ caseId: strin
               onZoomReset={() => setZoom(1)}
             />
             <div className="relative flex flex-1">
-              <MriStage zoom={zoom} slice={slice} layerSeg={layerSeg} layerGradcam={layerGradcam} />
+              <MriStage
+                activeCase={activeCase}
+                zoom={zoom}
+                slice={slice}
+                layerSeg={layerSeg}
+                layerGradcam={layerGradcam}
+              />
               <SliceControls
                 slice={slice}
                 onUp={() => setSlice((s) => Math.min(156, s + 1))}
