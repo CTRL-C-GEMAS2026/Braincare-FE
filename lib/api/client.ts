@@ -43,3 +43,24 @@ export async function apiPatch<T>(path: string, body?: unknown): Promise<T> {
   });
   return handle<T>(res);
 }
+
+export async function apiUpload<T>(path: string, formData: FormData): Promise<T> {
+  const res = await fetch(`${API_BASE_URL}${path}`, {
+    method: 'POST',
+    headers: { ...authHeader() },
+    body: formData,
+  });
+  return handle<T>(res);
+}
+
+export async function fetchBlob(path: string): Promise<Blob | null> {
+  const res = await fetch(`${API_BASE_URL}${path}`, { headers: { ...authHeader() } });
+  if (!res.ok) {
+    if (res.status === 401 && typeof window !== 'undefined') {
+      clearSession();
+      if (window.location.pathname !== '/login') window.location.href = '/login';
+    }
+    return null;
+  }
+  return res.blob();
+}
