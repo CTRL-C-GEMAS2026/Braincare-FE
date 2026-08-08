@@ -22,13 +22,16 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   // after mount; this one-time sync on mount is intentional, not a loop.
   useEffect(() => {
     // eslint-disable-next-line react-hooks/set-state-in-effect
-    setUser(readSession());
+    setUser(readSession()?.user ?? null);
     setReady(true);
   }, []);
 
   async function login(email: string, password: string) {
-    const { user } = await apiPost<{ user: AuthUser }>('/api/auth/login', { email, password });
-    writeSession(user);
+    const { user, token } = await apiPost<{ user: AuthUser; token: string }>('/api/auth/login', {
+      email,
+      password,
+    });
+    writeSession({ user, token });
     setUser(user);
   }
 

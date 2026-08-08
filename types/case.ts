@@ -14,15 +14,15 @@ export interface Case {
   tumorType: string;
   grade: string;
   confidence: number;
-  volume: string;
+  volume: number;
   location: string;
   edema: string;
   narrative: string;
   review: ReviewState;
   reviewNote?: string;
   reviewedAt?: string;
-  /** epoch ms; when set and in the future, GET responses report isAnalyzing: true */
-  analyzingUntil?: number | null;
+  /** ISO 8601; when set and in the future, GET responses report isAnalyzing: true */
+  analyzingUntil?: string | null;
 }
 
 /** Case as returned by the API: raw enum fields plus the computed analyzing flag. */

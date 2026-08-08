@@ -15,6 +15,7 @@ export function ProfileCard({ profile }: { profile: UserProfile }) {
   const [draftSpecialty, setDraftSpecialty] = useState(profile.specialty);
   const [draftSip, setDraftSip] = useState(profile.sip);
   const [saving, setSaving] = useState(false);
+  const [error, setError] = useState<string | null>(null);
   const { logout } = useAuth();
   const router = useRouter();
 
@@ -34,19 +35,29 @@ export function ProfileCard({ profile }: { profile: UserProfile }) {
   }
 
   async function save() {
+    setError(null);
     setSaving(true);
     try {
       await apiPatch('/api/profile', { name: draftName, specialty: draftSpecialty, sip: draftSip });
       await mutate('/api/profile');
       setEditing(false);
+    } catch (err) {
+      console.error('Gagal menyimpan profil:', err);
+      setError('Gagal menyimpan perubahan. Coba lagi.');
     } finally {
       setSaving(false);
     }
   }
 
   async function onPhoto(dataUrl: string) {
-    await apiPatch('/api/profile', { photoUrl: dataUrl });
-    await mutate('/api/profile');
+    setError(null);
+    try {
+      await apiPatch('/api/profile', { photoUrl: dataUrl });
+      await mutate('/api/profile');
+    } catch (err) {
+      console.error('Gagal mengunggah foto profil:', err);
+      setError('Gagal mengunggah foto. Coba lagi.');
+    }
   }
 
   return (
@@ -100,6 +111,8 @@ export function ProfileCard({ profile }: { profile: UserProfile }) {
           </>
         )}
       </div>
+
+      {error && <div className="mt-3 text-[13px] font-medium text-danger-700">{error}</div>}
 
       <div className="mt-5 rounded-2xl border border-slate-200 p-6">
         <div className="mb-4 text-[13px] font-bold text-slate-700">Data Fasilitas Kesehatan</div>

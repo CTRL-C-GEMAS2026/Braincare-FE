@@ -51,7 +51,8 @@ export function RegisterForm({ onSuccess }: { onSuccess: (email: string) => void
     try {
       await apiPost('/api/auth/register', { name, email, sip, specialty, hospital, password, confirmPassword });
       onSuccess(email);
-    } catch {
+    } catch (err) {
+      console.error('Registrasi gagal:', err);
       setError('Registrasi gagal. Periksa kembali data Anda.');
     } finally {
       setLoading(false);

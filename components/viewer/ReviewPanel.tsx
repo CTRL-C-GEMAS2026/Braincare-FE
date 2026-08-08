@@ -20,14 +20,19 @@ export function ReviewPanel({
   const [showDisagreeForm, setShowDisagreeForm] = useState(false);
   const [note, setNote] = useState('');
   const [busy, setBusy] = useState(false);
+  const [error, setError] = useState<string | null>(null);
 
   async function act(body: { action: 'agree' } | { action: 'disagree'; note: string } | { action: 'reset' }) {
+    setError(null);
     setBusy(true);
     try {
       const updated = await apiPatch<CaseDTO>(`/api/cases/${activeCase.id}/review`, body);
       onUpdated(updated);
       setShowDisagreeForm(false);
       setNote('');
+    } catch (err) {
+      console.error('Gagal menyimpan tinjauan:', err);
+      setError('Gagal menyimpan tinjauan. Coba lagi.');
     } finally {
       setBusy(false);
     }
@@ -44,6 +49,8 @@ export function ReviewPanel({
       <div className="mb-3.5 text-xs text-slate-400">
         Konfirmasi hasil AI, atau ajukan koreksi jika ada ketidaksesuaian.
       </div>
+
+      {error && <div className="mb-3 text-[12.5px] font-medium text-danger-700">{error}</div>}
 
       {activeCase.review === 'none' && !showDisagreeForm && (
         <div className="animate-bc-fade-in flex gap-2.5">

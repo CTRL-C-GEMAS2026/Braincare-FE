@@ -21,7 +21,8 @@ export function LoginForm({ initialEmail }: { initialEmail?: string }) {
     try {
       await login(email, password);
       router.push('/dashboard');
-    } catch {
+    } catch (err) {
+      console.error('Gagal masuk:', err);
       setError('Gagal masuk. Periksa kembali email dan kata sandi Anda.');
     } finally {
       setLoading(false);

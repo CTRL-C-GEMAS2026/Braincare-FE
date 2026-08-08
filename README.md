@@ -1,36 +1,48 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# BrainCare (Frontend)
 
-## Getting Started
+Antarmuka radiolog untuk BrainCare — unggah studi MRI, lihat hasil analisis AI (segmentasi, Grad-CAM, narasi klinis), dan beri tinjauan (setuju/koreksi). Dibangun dengan Next.js (App Router) + SWR. Backend-nya ada di proyek terpisah [`Braincare-BE`](../Braincare-BE) (FastAPI + PostgreSQL).
 
-First, run the development server:
+## Quick Setup
 
-```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
-```
+1. **Install dependency**
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+   ```bash
+   npm install
+   ```
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+2. **Konfigurasi URL backend.** Salin `.env.example` ke `.env.local`:
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+   ```bash
+   cp .env.example .env.local
+   ```
 
-## Learn More
+   Isinya menunjuk ke backend lokal secara default:
 
-To learn more about Next.js, take a look at the following resources:
+   ```
+   NEXT_PUBLIC_API_BASE_URL=http://localhost:8000
+   ```
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+   Ubah nilainya kalau backend jalan di alamat lain (mis. URL deployment).
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+3. **Jalankan backend** ([`Braincare-BE`](../Braincare-BE)) terlebih dahulu — lihat README di proyek itu. Aplikasi ini murni klien; tanpa backend jalan, semua halaman setelah login akan gagal memuat data.
 
-## Deploy on Vercel
+4. **Jalankan dev server**:
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+   ```bash
+   npm run dev
+   ```
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+   Buka [http://localhost:3000](http://localhost:3000). Halaman `/login` menyediakan tab "Daftar" untuk membuat akun dokter baru (tersimpan langsung ke database lewat backend).
+
+## Integrasi dengan Backend
+
+- Semua pemanggilan API lewat `lib/api/client.ts`, yang menambahkan header `Authorization: Bearer <token>` otomatis dari sesi tersimpan (`lib/auth/session.ts`) dan mengarah ke `NEXT_PUBLIC_API_BASE_URL`.
+- Sesi (token + info user) disimpan di `localStorage` setelah login, dibaca oleh `lib/auth/AuthContext.tsx`. Token kedaluwarsa/invalid (respons 401) otomatis menghapus sesi dan mengarahkan ke `/login`.
+- `app/(app)/layout.tsx` adalah route guard: halaman di bawah `(app)` (`dashboard`, `upload`, `history`, `profile`, `viewer`) hanya bisa diakses setelah login.
+- Halaman **Unggah** mengumpulkan data pasien (nama, MRN, umur, jenis kelamin, tanggal periksa) karena backend mensyaratkan data ini untuk membuat kasus baru — ini bukan sekadar metadata unggahan, tapi identitas rekam medis yang tervalidasi di server.
+- Unggah berkas DICOM/NII sendiri masih **simulasi** di sisi klien (progress bar tanpa upload sungguhan) — backend belum punya endpoint penyimpanan berkas biner.
+- Tanggal/waktu dari backend (`examDate`, `reviewedAt`, `lastLogin.at`) dalam format ISO 8601 dan ditampilkan apa adanya (belum diformat ulang ke gaya Indonesia).
+
+## Deployment
+
+Saat deploy (mis. Vercel), set environment variable `NEXT_PUBLIC_API_BASE_URL` ke URL backend produksi, dan pastikan `CORS_ORIGINS` di backend menyertakan origin domain frontend ini.
