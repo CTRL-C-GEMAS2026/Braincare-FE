@@ -1,4 +1,4 @@
-import type { CaseDTO } from '@/types/case';
+import type { CaseDTO, XaiLayer } from '@/types/case';
 
 function InfoCard({ label, value }: { label: string; value: string }) {
   return (
@@ -9,8 +9,11 @@ function InfoCard({ label, value }: { label: string; value: string }) {
   );
 }
 
-export function NarrativePanel({ activeCase }: { activeCase: CaseDTO }) {
-  const showGradcam = !activeCase.imageUrl;
+export function NarrativePanel({ activeCase, xaiLayer }: { activeCase: CaseDTO; xaiLayer: XaiLayer }) {
+  const hasXai = activeCase.gradcamUrl !== null || activeCase.attentionUrl !== null;
+  const effectiveXai: 'gradcam' | 'attention' =
+    xaiLayer !== 'none' ? xaiLayer : activeCase.gradcamUrl !== null ? 'gradcam' : 'attention';
+
   const infoCards = [
     { label: 'Lokasi', value: activeCase.location },
     { label: 'Grading (WHO)', value: activeCase.grade },
@@ -51,14 +54,15 @@ export function NarrativePanel({ activeCase }: { activeCase: CaseDTO }) {
         </div>
       )}
 
-      {showGradcam && (
+      {hasXai && (
         <>
           <div className="mb-2.5 text-[11px] font-bold uppercase tracking-wide text-slate-400">
             Keterangan Peta XAI
           </div>
           <div className="text-[12.5px] leading-relaxed text-slate-500">
-            Grad-CAM menyorot area citra yang paling memengaruhi keputusan model, bukan batas anatomis pasti. Gunakan
-            bersama mask segmentasi untuk verifikasi klinis.
+            {effectiveXai === 'attention'
+              ? 'Attention Weight Map menunjukkan area yang menjadi fokus perhatian model selama proses analisis, sebagai fitur bawaan arsitektur AttentionUNet — bukan indikasi lokasi tumor secara langsung. Gunakan bersama Grad-CAM dan mask segmentasi untuk interpretasi yang lebih utuh.'
+              : 'Grad-CAM menyorot area citra yang paling memengaruhi keputusan model, bukan batas anatomis pasti. Gunakan bersama mask segmentasi untuk verifikasi klinis.'}
           </div>
         </>
       )}
