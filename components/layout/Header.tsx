@@ -36,16 +36,18 @@ export function Header() {
     : '';
 
   return (
-    <div className="flex h-15 h-[60px] flex-shrink-0 items-center justify-between border-b border-slate-200 px-4 md:px-7">
-      <div className="text-[17px] font-bold text-slate-900">{titleFor(pathname)}</div>
+    <div className="flex h-15 h-[60px] flex-shrink-0 items-center justify-between gap-2 border-b border-slate-200 px-4 md:px-7">
+      <div className="min-w-0 flex-1 truncate text-[17px] font-bold text-slate-900">{titleFor(pathname)}</div>
       <Dropdown
         trigger={({ toggle }) => (
           <button
             onClick={toggle}
-            className="flex items-center gap-2.5 rounded-xl px-2 py-1.5 hover:bg-slate-50"
+            className="flex flex-shrink-0 items-center gap-2.5 rounded-xl px-2 py-1.5 hover:bg-slate-50"
           >
-            <div className="text-right">
-              <div className="text-[13px] font-semibold text-slate-900">{profile?.name}</div>
+            <div className="min-w-0 text-right">
+              <div className="max-w-[140px] truncate text-[13px] font-semibold text-slate-900 md:max-w-none">
+                {profile?.name}
+              </div>
               <div className="hidden text-[11px] text-slate-500 md:block">{profile?.hospital}</div>
             </div>
             <div

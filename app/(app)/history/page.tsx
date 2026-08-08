@@ -24,7 +24,7 @@ export default function HistoryPage() {
   }, [cases, search, severity]);
 
   return (
-    <div className="max-w-[1200px] px-8 py-7">
+    <div className="max-w-[1200px] px-4 py-5 md:px-8 md:py-7">
       <div className="mb-1 text-xl font-bold">Riwayat Pemeriksaan</div>
       <div className="mb-5 text-[13px] text-slate-500">
         Arsip kasus yang sudah selesai dianalisis, untuk membandingkan dengan kasus baru dan melacak status

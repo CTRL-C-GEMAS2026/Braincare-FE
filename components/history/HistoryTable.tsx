@@ -14,7 +14,7 @@ export function HistoryTable({ cases }: { cases: CaseDTO[] }) {
   return (
     <div className="overflow-hidden rounded-2xl border border-slate-200 shadow-card">
       <div
-        className="grid gap-4 border-b border-slate-200 bg-slate-50 px-5 py-3 text-xs font-semibold uppercase tracking-wide text-slate-500"
+        className="hidden gap-4 border-b border-slate-200 bg-slate-50 px-5 py-3 text-xs font-semibold uppercase tracking-wide text-slate-500 md:grid"
         style={{ gridTemplateColumns: COLS }}
       >
         <div>Pasien</div>
@@ -31,24 +31,27 @@ export function HistoryTable({ cases }: { cases: CaseDTO[] }) {
         return (
           <div
             key={c.id}
-            className="grid items-center gap-4 border-b border-slate-100 px-5 py-4 last:border-b-0"
+            className="relative flex flex-col gap-2 border-b border-slate-100 py-4 pl-5 pr-5 last:border-b-0 md:grid md:items-center md:gap-4"
             style={{ gridTemplateColumns: COLS }}
           >
-            <div>
+            <div className="pr-28 md:pr-0">
               <div className="text-sm font-semibold">{c.name}</div>
               <div className="mt-0.5 text-xs text-slate-500">{c.mrn}</div>
             </div>
-            <div className="font-mono text-[13px] text-slate-700">{c.examDate}</div>
-            <div className="text-[13px] text-slate-700">{c.tumorType}</div>
-            <div>
-              <Badge label={sev.label} className={sev.className} />
+            <div className="flex flex-wrap items-center gap-x-1.5 text-xs text-slate-500 md:contents">
+              <span className="font-mono md:text-[13px] md:text-slate-700">{c.examDate}</span>
+              <span className="md:text-[13px] md:text-slate-700">
+                <span className="md:hidden">· </span>
+                {c.tumorType}
+              </span>
             </div>
-            <div>
+            <div className="flex gap-2 md:contents">
+              <Badge label={sev.label} className={sev.className} />
               <Badge label={rev.label} className={rev.className} />
             </div>
             <button
               onClick={() => router.push(`/viewer/${c.id}?from=history`)}
-              className="rounded-lg border border-slate-200 bg-white px-3 py-1.75 py-[7px] text-[12.5px] font-semibold text-brand-600 hover:bg-slate-50"
+              className="absolute right-5 top-4 rounded-lg border border-slate-200 bg-white px-3 py-1.75 py-[7px] text-[12.5px] font-semibold text-brand-600 hover:bg-slate-50 md:static"
             >
               Bandingkan
             </button>

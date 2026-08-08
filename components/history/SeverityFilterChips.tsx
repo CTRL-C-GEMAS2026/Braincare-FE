@@ -10,7 +10,7 @@ export function SeverityFilterChips({
   onChange: (key: Severity | 'semua') => void;
 }) {
   return (
-    <div className="mb-5 flex gap-2">
+    <div className="mb-5 flex gap-2 overflow-x-auto pb-1">
       {SEVERITY_FILTERS.map((f) => (
         <button
           key={f.key}
