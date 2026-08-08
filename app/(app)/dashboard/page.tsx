@@ -14,8 +14,8 @@ export default function DashboardPage() {
   const { data: cases } = useSWR<CaseDTO[]>('/api/cases', fetcher);
 
   return (
-    <div className="max-w-[1200px] px-8 py-7">
-      <div className="mb-5 flex items-end justify-between">
+    <div className="max-w-[1200px] px-4 py-5 md:px-8 md:py-7">
+      <div className="mb-5 flex flex-col gap-3 md:flex-row md:items-end md:justify-between">
         <div>
           <div className="text-xl font-bold">Antrian Pemeriksaan</div>
           <div className="mt-1 text-[13px] text-slate-500">

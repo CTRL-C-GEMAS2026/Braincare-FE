@@ -7,22 +7,15 @@ export function StatCard({
   icon,
   iconBg,
   valueClassName,
-  first,
 }: {
   label: string;
   value: string | number;
   icon: ReactNode;
   iconBg: string;
   valueClassName?: string;
-  first?: boolean;
 }) {
   return (
-    <div
-      className={clsx(
-        'flex flex-1 items-center gap-3.5 px-5 py-4.5 py-[18px]',
-        !first && 'border-l border-slate-200'
-      )}
-    >
+    <div className="flex flex-1 items-center gap-3.5 bg-white px-5 py-4.5 py-[18px]">
       <div
         className={clsx('flex h-8.5 w-8.5 h-[34px] w-[34px] flex-shrink-0 items-center justify-center rounded-lg', iconBg)}
       >

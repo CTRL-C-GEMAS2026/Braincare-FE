@@ -16,9 +16,8 @@ export function StatCardsRow({ cases }: { cases: CaseDTO[] }) {
   const done = cases.filter((c) => c.status === 'selesai').length;
 
   return (
-    <div className="mb-6 flex overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-card">
+    <div className="mb-6 grid grid-cols-2 gap-px overflow-hidden rounded-2xl border border-slate-200 bg-slate-200 shadow-card md:flex">
       <StatCard
-        first
         label="Total Pemeriksaan"
         value={total}
         iconBg="bg-slate-100"
