@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from 'react';
 import { fetchBlob } from '@/lib/api/client';
-import type { CaseDTO } from '@/types/case';
+import type { CaseDTO, XaiLayer } from '@/types/case';
 
 function useAuthenticatedImage(url: string | null): string | null {
   const [src, setSrc] = useState<string | null>(null);
@@ -40,17 +40,18 @@ export function MriStage({
   zoom,
   slice,
   layerSeg,
-  layerGradcam,
+  xaiLayer,
 }: {
   activeCase: CaseDTO;
   zoom: number;
   slice: number;
   layerSeg: boolean;
-  layerGradcam: boolean;
+  xaiLayer: XaiLayer;
 }) {
   const imageSrc = useAuthenticatedImage(activeCase.imageUrl);
   const maskSrc = useAuthenticatedImage(activeCase.maskUrl);
-  const showGradcam = !activeCase.imageUrl;
+  const gradcamSrc = useAuthenticatedImage(activeCase.gradcamUrl);
+  const attentionSrc = useAuthenticatedImage(activeCase.attentionUrl);
 
   return (
     <div className="relative flex flex-1 items-center justify-center overflow-hidden bg-theater-950">
@@ -76,19 +77,24 @@ export function MriStage({
               draggable={false}
             />
           )}
-
-          {/* Overlay Grad-CAM dekoratif -- hanya untuk kasus tanpa citra asli (belum ada endpoint XAI sungguhan) */}
-          {showGradcam && (
-            <div
-              className="pointer-events-none absolute left-[52%] top-[30%] h-[150px] w-[170px] rounded-full transition-all duration-300"
-              style={{
-                transform: 'translate(-50%,-50%)',
-                opacity: layerGradcam ? 0.8 : 0,
-                background:
-                  'radial-gradient(circle at 50% 45%, #FDE047 0%, #F97316 35%, #DC2626 58%, transparent 75%)',
-                filter: 'blur(10px)',
-                mixBlendMode: 'screen',
-              }}
+          {gradcamSrc && (
+            // eslint-disable-next-line @next/next/no-img-element
+            <img
+              src={gradcamSrc}
+              alt="Peta Grad-CAM"
+              className="absolute inset-0 h-full w-full select-none transition-opacity duration-300"
+              style={{ opacity: xaiLayer === 'gradcam' ? 0.85 : 0 }}
+              draggable={false}
+            />
+          )}
+          {attentionSrc && (
+            // eslint-disable-next-line @next/next/no-img-element
+            <img
+              src={attentionSrc}
+              alt="Peta Attention Weight"
+              className="absolute inset-0 h-full w-full select-none transition-opacity duration-300"
+              style={{ opacity: xaiLayer === 'attention' ? 0.85 : 0 }}
+              draggable={false}
             />
           )}
         </div>
