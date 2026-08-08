@@ -12,7 +12,7 @@ import { ViewerToolbar } from '@/components/viewer/ViewerToolbar';
 import { SliceControls } from '@/components/viewer/SliceControls';
 import { NarrativePanel } from '@/components/viewer/NarrativePanel';
 import { ReviewPanel } from '@/components/viewer/ReviewPanel';
-import type { CaseDTO } from '@/types/case';
+import type { CaseDTO, XaiLayer } from '@/types/case';
 
 export default function ViewerPage({ params }: { params: Promise<{ caseId: string }> }) {
   const { caseId } = use(params);
@@ -20,7 +20,7 @@ export default function ViewerPage({ params }: { params: Promise<{ caseId: strin
   const cameFrom = searchParams.get('from') ?? 'dashboard';
 
   const [layerSeg, setLayerSeg] = useState(true);
-  const [layerGradcam, setLayerGradcam] = useState(true);
+  const [xaiLayer, setXaiLayer] = useState<XaiLayer>('gradcam');
   const [zoom, setZoom] = useState(1);
   const [slice, setSlice] = useState(78);
 
@@ -37,6 +37,9 @@ export default function ViewerPage({ params }: { params: Promise<{ caseId: strin
     );
   }
 
+  const handleSelectXai = (layer: 'gradcam' | 'attention') =>
+    setXaiLayer((current) => (current === layer ? 'none' : layer));
+
   return (
     <div id="bc-print-area" className="flex h-full flex-col">
       <ViewerHeader activeCase={activeCase} cameFrom={cameFrom} />
@@ -47,11 +50,11 @@ export default function ViewerPage({ params }: { params: Promise<{ caseId: strin
         <div className="flex min-h-0 flex-1">
           <div className="flex min-w-0 flex-1 flex-col bg-theater-950">
             <ViewerToolbar
+              activeCase={activeCase}
               layerSeg={layerSeg}
-              layerGradcam={layerGradcam}
+              xaiLayer={xaiLayer}
               onToggleSeg={() => setLayerSeg((v) => !v)}
-              onToggleGradcam={() => setLayerGradcam((v) => !v)}
-              showGradcam={!activeCase.imageUrl}
+              onSelectXai={handleSelectXai}
               zoom={zoom}
               onZoomIn={() => setZoom((z) => Math.min(2.2, z + 0.2))}
               onZoomOut={() => setZoom((z) => Math.max(0.6, z - 0.2))}
@@ -63,7 +66,7 @@ export default function ViewerPage({ params }: { params: Promise<{ caseId: strin
                 zoom={zoom}
                 slice={slice}
                 layerSeg={layerSeg}
-                layerGradcam={layerGradcam}
+                xaiLayer={xaiLayer}
               />
               <SliceControls
                 slice={slice}
@@ -74,7 +77,7 @@ export default function ViewerPage({ params }: { params: Promise<{ caseId: strin
           </div>
 
           <div className="flex w-[400px] flex-shrink-0 flex-col border-l border-slate-200">
-            <NarrativePanel activeCase={activeCase} />
+            <NarrativePanel activeCase={activeCase} xaiLayer={xaiLayer} />
             <ReviewPanel
               activeCase={activeCase}
               onUpdated={(updated) => {
