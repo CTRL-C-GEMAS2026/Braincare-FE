@@ -11,13 +11,13 @@ export default function ProfilePage() {
   const { data: profile } = useSWR<UserProfile>('/api/profile', fetcher);
 
   return (
-    <div className="max-w-[980px] px-8 py-7">
+    <div className="max-w-[980px] px-4 py-5 md:px-8 md:py-7">
       <div className="mb-5 text-xl font-bold">Profil</div>
 
       {!profile ? (
         <Skeleton className="h-96 w-full rounded-2xl" />
       ) : (
-        <div className="grid grid-cols-[1.7fr_1fr] items-start gap-5">
+        <div className="grid grid-cols-1 items-start gap-5 md:grid-cols-[1.7fr_1fr]">
           <ProfileCard profile={profile} />
           <SecurityCard profile={profile} />
         </div>

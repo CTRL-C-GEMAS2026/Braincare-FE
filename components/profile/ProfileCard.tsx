@@ -61,7 +61,7 @@ export function ProfileCard({ profile }: { profile: UserProfile }) {
   }
 
   return (
-    <div className="mb-5 rounded-2xl border border-slate-200 p-7 shadow-card">
+    <div className="mb-5 rounded-2xl border border-slate-200 p-5 shadow-card md:p-7">
       <div className="flex items-start gap-5">
         <AvatarUpload photoUrl={profile.photoUrl} initials={initials} onPick={onPhoto} />
 
@@ -95,7 +95,7 @@ export function ProfileCard({ profile }: { profile: UserProfile }) {
         )}
       </div>
 
-      <div className="mt-5.5 mt-[22px] flex gap-2.5 border-t border-slate-100 pt-5">
+      <div className="mt-5.5 mt-[22px] flex flex-wrap gap-2.5 border-t border-slate-100 pt-5">
         {!editing ? (
           <Button variant="secondary" onClick={startEdit} className="flex-shrink-0 whitespace-nowrap">
             Edit Profil
@@ -116,7 +116,7 @@ export function ProfileCard({ profile }: { profile: UserProfile }) {
 
       <div className="mt-5 rounded-2xl border border-slate-200 p-6">
         <div className="mb-4 text-[13px] font-bold text-slate-700">Data Fasilitas Kesehatan</div>
-        <div className="grid grid-cols-2 gap-4">
+        <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
           <div>
             <div className="text-[11px] font-semibold uppercase text-slate-400">Rumah Sakit</div>
             <div className="mt-1 text-sm font-semibold">{profile.hospital}</div>
