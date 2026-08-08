@@ -10,20 +10,15 @@ function useAuthenticatedImage(url: string | null): string | null {
   useEffect(() => {
     let cancelled = false;
     let objectUrl: string | null = null;
+    // Reset on every url change so a stale image from the previous case never lingers on screen.
+    // eslint-disable-next-line react-hooks/set-state-in-effect
+    setSrc(null);
 
-    if (!url) {
-      // eslint-disable-next-line
-      setSrc(null);
-      return;
-    }
+    if (!url) return;
 
     fetchBlob(url)
       .then((blob) => {
-        if (cancelled) return;
-        if (!blob) {
-          setSrc(null);
-          return;
-        }
+        if (cancelled || !blob) return;
         objectUrl = URL.createObjectURL(blob);
         setSrc(objectUrl);
       })
@@ -55,6 +50,7 @@ export function MriStage({
 }) {
   const imageSrc = useAuthenticatedImage(activeCase.imageUrl);
   const maskSrc = useAuthenticatedImage(activeCase.maskUrl);
+  const showGradcam = !activeCase.imageUrl;
 
   return (
     <div className="relative flex flex-1 items-center justify-center overflow-hidden bg-theater-950">
@@ -81,18 +77,20 @@ export function MriStage({
             />
           )}
 
-          {/* Overlay Grad-CAM dekoratif -- backend belum expose peta XAI terpisah dari mask */}
-          <div
-            className="pointer-events-none absolute left-[52%] top-[30%] h-[150px] w-[170px] rounded-full transition-all duration-300"
-            style={{
-              transform: 'translate(-50%,-50%)',
-              opacity: layerGradcam ? 0.8 : 0,
-              background:
-                'radial-gradient(circle at 50% 45%, #FDE047 0%, #F97316 35%, #DC2626 58%, transparent 75%)',
-              filter: 'blur(10px)',
-              mixBlendMode: 'screen',
-            }}
-          />
+          {/* Overlay Grad-CAM dekoratif -- hanya untuk kasus tanpa citra asli (belum ada endpoint XAI sungguhan) */}
+          {showGradcam && (
+            <div
+              className="pointer-events-none absolute left-[52%] top-[30%] h-[150px] w-[170px] rounded-full transition-all duration-300"
+              style={{
+                transform: 'translate(-50%,-50%)',
+                opacity: layerGradcam ? 0.8 : 0,
+                background:
+                  'radial-gradient(circle at 50% 45%, #FDE047 0%, #F97316 35%, #DC2626 58%, transparent 75%)',
+                filter: 'blur(10px)',
+                mixBlendMode: 'screen',
+              }}
+            />
+          )}
         </div>
       ) : (
         <div className="text-[13px] text-slate-500">Citra belum tersedia untuk kasus ini.</div>

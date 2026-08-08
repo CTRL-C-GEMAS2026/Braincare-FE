@@ -4,7 +4,7 @@ import { useRef, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { mutate } from 'swr';
 import clsx from 'clsx';
-import { apiUpload } from '@/lib/api/client';
+import { apiUpload, ApiError } from '@/lib/api/client';
 import { Dropzone } from '@/components/upload/Dropzone';
 import { UploadFileList } from '@/components/upload/UploadFileList';
 import { Button } from '@/components/ui/Button';
@@ -37,13 +37,13 @@ export default function UploadPage() {
   const [examDate, setExamDate] = useState(todayIso());
 
   const patientDataValid = mrn.trim() !== '' && name.trim() !== '' && Number(age) > 0 && examDate !== '';
-  const readyToAnalyze =
-    uploadMode === 'image' ? imageFile !== null : files.length > 0 && files.every((f) => f.progress >= 100);
+  const readyToAnalyze = imageFile !== null;
   const canSubmit = uploadMode === 'image' && readyToAnalyze && patientDataValid && !starting;
 
   function handleImageFile(file: File) {
     if (!ALLOWED_IMAGE_MIME_TYPES.includes(file.type)) {
       setImageError('Berkas harus berformat PNG atau JPEG.');
+      setImageFile(null);
       return;
     }
     setImageError(null);
@@ -83,7 +83,7 @@ export default function UploadPage() {
       router.push(`/viewer/${created.id}`);
     } catch (err) {
       console.error('Gagal memulai analisis:', err);
-      setError('Gagal memulai analisis. Periksa kembali data pasien dan coba lagi.');
+      setError(err instanceof ApiError ? err.message : 'Gagal memulai analisis. Periksa kembali data pasien dan coba lagi.');
     } finally {
       setStarting(false);
     }

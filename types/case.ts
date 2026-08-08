@@ -11,10 +11,10 @@ export interface Case {
   examDate: string;
   status: CaseStatus;
   severity: Severity;
-  tumorType: string;
+  tumorType: string | null;
   grade: string | null;
-  confidence: number;
-  volume: number;
+  confidence: number | null;
+  volume: number | null;
   location: string | null;
   edema: string | null;
   narrative: string | null;

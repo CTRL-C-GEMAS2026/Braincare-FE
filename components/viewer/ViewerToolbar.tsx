@@ -33,6 +33,7 @@ export function ViewerToolbar({
   layerGradcam,
   onToggleSeg,
   onToggleGradcam,
+  showGradcam,
   zoom,
   onZoomIn,
   onZoomOut,
@@ -42,6 +43,7 @@ export function ViewerToolbar({
   layerGradcam: boolean;
   onToggleSeg: () => void;
   onToggleGradcam: () => void;
+  showGradcam: boolean;
   zoom: number;
   onZoomIn: () => void;
   onZoomOut: () => void;
@@ -51,7 +53,9 @@ export function ViewerToolbar({
     <div className="flex flex-shrink-0 items-center justify-between bg-theater-900 px-5 py-3">
       <div className="flex gap-2.5">
         <Chip on={layerSeg} dotColor="#3B82F6" label="Segmentasi Tumor" onClick={onToggleSeg} />
-        <Chip on={layerGradcam} dotColor="#F97316" label="Grad-CAM (XAI)" onClick={onToggleGradcam} />
+        {showGradcam && (
+          <Chip on={layerGradcam} dotColor="#F97316" label="Grad-CAM (XAI)" onClick={onToggleGradcam} />
+        )}
       </div>
       <div className="flex items-center gap-2">
         <button

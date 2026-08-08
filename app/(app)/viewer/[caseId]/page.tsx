@@ -51,6 +51,7 @@ export default function ViewerPage({ params }: { params: Promise<{ caseId: strin
               layerGradcam={layerGradcam}
               onToggleSeg={() => setLayerSeg((v) => !v)}
               onToggleGradcam={() => setLayerGradcam((v) => !v)}
+              showGradcam={!activeCase.imageUrl}
               zoom={zoom}
               onZoomIn={() => setZoom((z) => Math.min(2.2, z + 0.2))}
               onZoomOut={() => setZoom((z) => Math.max(0.6, z - 0.2))}

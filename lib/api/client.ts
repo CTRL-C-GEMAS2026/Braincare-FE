@@ -59,6 +59,8 @@ export async function fetchBlob(path: string): Promise<Blob | null> {
     if (res.status === 401 && typeof window !== 'undefined') {
       clearSession();
       if (window.location.pathname !== '/login') window.location.href = '/login';
+    } else if (res.status !== 404) {
+      console.warn(`fetchBlob: unexpected status ${res.status} for ${path}`);
     }
     return null;
   }

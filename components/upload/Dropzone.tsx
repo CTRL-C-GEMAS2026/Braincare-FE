@@ -42,8 +42,8 @@ export function Dropzone(props: DropzoneProps) {
     <div
       onClick={handleClick}
       onDragOver={(e) => {
-        if (props.mode !== 'file') return;
         e.preventDefault();
+        if (props.mode !== 'file') return;
         setDragOver(true);
       }}
       onDragLeave={() => setDragOver(false)}
