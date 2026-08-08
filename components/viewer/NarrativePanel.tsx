@@ -10,9 +10,17 @@ function InfoCard({ label, value }: { label: string; value: string }) {
 }
 
 export function NarrativePanel({ activeCase, xaiLayer }: { activeCase: CaseDTO; xaiLayer: XaiLayer }) {
-  const hasXai = activeCase.gradcamUrl !== null || activeCase.attentionUrl !== null;
+  const hasGradcam = activeCase.gradcamUrl !== null;
+  const hasAttention = activeCase.attentionUrl !== null;
+  const hasXai = hasGradcam || hasAttention;
   const effectiveXai: 'gradcam' | 'attention' =
-    xaiLayer !== 'none' ? xaiLayer : activeCase.gradcamUrl !== null ? 'gradcam' : 'attention';
+    xaiLayer === 'gradcam' && hasGradcam
+      ? 'gradcam'
+      : xaiLayer === 'attention' && hasAttention
+        ? 'attention'
+        : hasGradcam
+          ? 'gradcam'
+          : 'attention';
 
   const infoCards = [
     { label: 'Lokasi', value: activeCase.location },
