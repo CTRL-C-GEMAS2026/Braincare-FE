@@ -73,7 +73,7 @@ export function MriStage({
               src={maskSrc}
               alt="Hasil segmentasi AI"
               className="absolute inset-0 h-full w-full select-none transition-opacity duration-300"
-              style={{ opacity: layerSeg ? 0.85 : 0 }}
+              style={{ opacity: layerSeg ? 0.85 : 0, pointerEvents: layerSeg ? 'auto' : 'none' }}
               draggable={false}
             />
           )}
@@ -83,7 +83,10 @@ export function MriStage({
               src={gradcamSrc}
               alt="Peta Grad-CAM"
               className="absolute inset-0 h-full w-full select-none transition-opacity duration-300"
-              style={{ opacity: xaiLayer === 'gradcam' ? 0.85 : 0 }}
+              style={{
+                opacity: xaiLayer === 'gradcam' ? 0.85 : 0,
+                pointerEvents: xaiLayer === 'gradcam' ? 'auto' : 'none',
+              }}
               draggable={false}
             />
           )}
@@ -93,7 +96,10 @@ export function MriStage({
               src={attentionSrc}
               alt="Peta Attention Weight"
               className="absolute inset-0 h-full w-full select-none transition-opacity duration-300"
-              style={{ opacity: xaiLayer === 'attention' ? 0.85 : 0 }}
+              style={{
+                opacity: xaiLayer === 'attention' ? 0.85 : 0,
+                pointerEvents: xaiLayer === 'attention' ? 'auto' : 'none',
+              }}
               draggable={false}
             />
           )}
