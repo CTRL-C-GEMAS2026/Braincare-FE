@@ -2,12 +2,12 @@
 
 import { useRouter } from 'next/navigation';
 import { Badge } from '@/components/ui/Badge';
-import { severityBadge } from '@/lib/utils/badge';
+import { severityBadge, statusBadge } from '@/lib/utils/badge';
 import type { CaseDTO } from '@/types/case';
 
 export function ViewerHeader({ activeCase, cameFrom }: { activeCase: CaseDTO; cameFrom: string }) {
   const router = useRouter();
-  const sev = severityBadge(activeCase.severity);
+  const sev = activeCase.isAnalyzing ? statusBadge(activeCase.status) : severityBadge(activeCase.severity);
 
   return (
     <div className="flex flex-shrink-0 items-center justify-between border-b border-slate-200 px-4 py-3.5 md:px-7">
