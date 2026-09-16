@@ -108,9 +108,6 @@ export function MriStage({
         <div className="text-[13px] text-slate-500">Citra belum tersedia untuk kasus ini.</div>
       )}
 
-      <div className="absolute bottom-4 left-5 font-mono text-[11px] text-slate-500">
-        Slice {slice} / 156 · Axial T1c
-      </div>
     </div>
   );
 }
