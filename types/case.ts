@@ -32,6 +32,9 @@ export interface Case {
   /** null kalau peta XAI itu belum/tidak tersedia untuk kasus ini (mis. inferensi XAI gagal) */
   gradcamUrl: string | null;
   attentionUrl: string | null;
+  /** null kalau case dibuat dari upload gambar tunggal (bukan volume NIfTI/DICOM) */
+  modality: string | null;
+  volumeShape: { axial: number; coronal: number; sagittal: number } | null;
 }
 
 /** Case as returned by the API: raw enum fields plus the computed analyzing flag. */
