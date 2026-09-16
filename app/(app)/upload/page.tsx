@@ -1,17 +1,16 @@
 'use client';
 
-import { useRef, useState } from 'react';
+import { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { mutate } from 'swr';
 import clsx from 'clsx';
 import { apiUpload, ApiError } from '@/lib/api/client';
 import { Dropzone } from '@/components/upload/Dropzone';
-import { UploadFileList } from '@/components/upload/UploadFileList';
 import { Button } from '@/components/ui/Button';
-import type { UploadFile } from '@/types/upload';
 import type { CaseDTO } from '@/types/case';
 
 const ALLOWED_IMAGE_MIME_TYPES = ['image/png', 'image/jpeg'];
+const ALLOWED_VOLUME_EXTENSIONS = ['.nii.gz', '.nii', '.dcm'];
 
 function todayIso() {
   return new Date().toISOString().slice(0, 10);
@@ -22,9 +21,6 @@ export default function UploadPage() {
 
   const [imageFile, setImageFile] = useState<File | null>(null);
   const [imageError, setImageError] = useState<string | null>(null);
-
-  const [files, setFiles] = useState<UploadFile[]>([]);
-  const counterRef = useRef(0);
 
   const [starting, setStarting] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -38,7 +34,7 @@ export default function UploadPage() {
 
   const patientDataValid = mrn.trim() !== '' && name.trim() !== '' && Number(age) > 0 && examDate !== '';
   const readyToAnalyze = imageFile !== null;
-  const canSubmit = uploadMode === 'image' && readyToAnalyze && patientDataValid && !starting;
+  const canSubmit = readyToAnalyze && patientDataValid && !starting;
 
   function handleImageFile(file: File) {
     if (!ALLOWED_IMAGE_MIME_TYPES.includes(file.type)) {
@@ -50,19 +46,15 @@ export default function UploadPage() {
     setImageFile(file);
   }
 
-  function onPickFile() {
-    counterRef.current += 1;
-    const id = `f${counterRef.current}`;
-    const fileName = `studi_mri_${counterRef.current}.dcm`;
-    setFiles((prev) => [...prev, { id, name: fileName, progress: 0 }]);
-
-    for (let step = 1; step <= 5; step++) {
-      setTimeout(() => {
-        setFiles((prev) =>
-          prev.map((f) => (f.id === id ? { ...f, progress: Math.min(100, f.progress + 20) } : f))
-        );
-      }, step * 220);
+  function handleVolumeFile(file: File) {
+    const lower = file.name.toLowerCase();
+    if (!ALLOWED_VOLUME_EXTENSIONS.some((ext) => lower.endsWith(ext))) {
+      setImageError('Berkas harus berformat DICOM (.dcm) atau NIfTI (.nii, .nii.gz).');
+      setImageFile(null);
+      return;
     }
+    setImageError(null);
+    setImageFile(file);
   }
 
   async function onStartAnalysis() {
@@ -110,7 +102,11 @@ export default function UploadPage() {
         <div className="mb-5 flex gap-2 rounded-xl bg-slate-100 p-1">
           <button
             type="button"
-            onClick={() => setUploadMode('image')}
+            onClick={() => {
+              setUploadMode('image');
+              setImageFile(null);
+              setImageError(null);
+            }}
             className={clsx(
               'flex-1 rounded-lg py-2 text-[13px] font-semibold transition-colors',
               uploadMode === 'image' ? 'bg-white text-brand-700 shadow-sm' : 'text-slate-500'
@@ -120,7 +116,11 @@ export default function UploadPage() {
           </button>
           <button
             type="button"
-            onClick={() => setUploadMode('dicom')}
+            onClick={() => {
+              setUploadMode('dicom');
+              setImageFile(null);
+              setImageError(null);
+            }}
             className={clsx(
               'flex-1 rounded-lg py-2 text-[13px] font-semibold transition-colors',
               uploadMode === 'dicom' ? 'bg-white text-brand-700 shadow-sm' : 'text-slate-500'
@@ -197,53 +197,44 @@ export default function UploadPage() {
         </div>
 
         {uploadMode === 'image' ? (
-          <>
-            <Dropzone
-              mode="file"
-              accept="image/png,image/jpeg"
-              title="Seret gambar MRI ke sini, atau klik untuk memilih"
-              description="Satu berkas PNG atau JPEG hasil scan MRI (mis. slice axial T1c)."
-              onFile={handleImageFile}
-            />
-            {imageError && <div className="mt-3.5 text-[13px] font-medium text-danger-700">{imageError}</div>}
-            {imageFile && (
-              <div className="mt-5 flex items-center gap-3.5 rounded-xl border border-slate-200 px-4.5 px-[18px] py-3.5">
-                <div className="flex h-9.5 w-9.5 h-[38px] w-[38px] flex-shrink-0 items-center justify-center rounded-lg bg-slate-100">
-                  <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#334155" strokeWidth="1.8">
-                    <path d="M6 2h9l5 5v13a2 2 0 01-2 2H6a2 2 0 01-2-2V4a2 2 0 012-2z" />
-                    <path d="M15 2v5h5" />
-                  </svg>
-                </div>
-                <div className="min-w-0 flex-1">
-                  <div className="truncate text-[13px] font-semibold">{imageFile.name}</div>
-                  <div className="mt-0.5 text-[12px] text-success-700">
-                    {(imageFile.size / 1024).toFixed(0)} KB · Siap dianalisis
-                  </div>
-                </div>
-                <button
-                  type="button"
-                  onClick={() => setImageFile(null)}
-                  className="text-xs font-semibold text-slate-500 hover:text-slate-700"
-                >
-                  Ganti
-                </button>
-              </div>
-            )}
-          </>
+          <Dropzone
+            accept="image/png,image/jpeg"
+            title="Seret gambar MRI ke sini, atau klik untuk memilih"
+            description="Satu berkas PNG atau JPEG hasil scan MRI (mis. slice axial T1c)."
+            onFile={handleImageFile}
+          />
         ) : (
-          <>
-            <Dropzone
-              mode="simulate"
-              title="Seret berkas ke sini, atau klik untuk memilih"
-              description="Data pasien akan divalidasi otomatis (integritas header DICOM, anonimisasi)"
-              onPick={onPickFile}
-            />
-            <UploadFileList files={files} />
-            <div className="mt-3.5 text-[13px] font-medium text-warning-700">
-              Mode ini belum didukung backend — gunakan mode &quot;Gambar MRI (PNG/JPG)&quot; untuk menjalankan
-              analisis AI.
+          <Dropzone
+            accept=".dcm,.nii,.nii.gz"
+            title="Seret berkas ke sini, atau klik untuk memilih"
+            description="Satu berkas studi DICOM (.dcm) atau NIfTI (.nii, .nii.gz). Slice dengan area tumor terbesar dipilih otomatis untuk dianalisis."
+            onFile={handleVolumeFile}
+          />
+        )}
+
+        {imageError && <div className="mt-3.5 text-[13px] font-medium text-danger-700">{imageError}</div>}
+        {imageFile && (
+          <div className="mt-5 flex items-center gap-3.5 rounded-xl border border-slate-200 px-4.5 px-[18px] py-3.5">
+            <div className="flex h-9.5 w-9.5 h-[38px] w-[38px] flex-shrink-0 items-center justify-center rounded-lg bg-slate-100">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#334155" strokeWidth="1.8">
+                <path d="M6 2h9l5 5v13a2 2 0 01-2 2H6a2 2 0 01-2-2V4a2 2 0 012-2z" />
+                <path d="M15 2v5h5" />
+              </svg>
             </div>
-          </>
+            <div className="min-w-0 flex-1">
+              <div className="truncate text-[13px] font-semibold">{imageFile.name}</div>
+              <div className="mt-0.5 text-[12px] text-success-700">
+                {(imageFile.size / 1024).toFixed(0)} KB · Siap dianalisis
+              </div>
+            </div>
+            <button
+              type="button"
+              onClick={() => setImageFile(null)}
+              className="text-xs font-semibold text-slate-500 hover:text-slate-700"
+            >
+              Ganti
+            </button>
+          </div>
         )}
 
         {error && <div className="mt-3.5 text-[13px] font-medium text-danger-700">{error}</div>}
@@ -253,7 +244,7 @@ export default function UploadPage() {
           disabled={!canSubmit}
           className="mt-5.5 mt-[22px] w-full py-3.5 text-[14.5px]"
         >
-          {starting ? 'Memulai…' : uploadMode === 'dicom' ? 'Mode Belum Tersedia' : 'Mulai Analisis AI'}
+          {starting ? 'Memulai…' : 'Mulai Analisis AI'}
         </Button>
       </div>
     </div>
