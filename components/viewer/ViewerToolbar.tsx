@@ -1,7 +1,7 @@
 import clsx from 'clsx';
 import type { CaseDTO, XaiLayer } from '@/types/case';
 
-function Chip({
+export function Chip({
   on,
   dotColor,
   label,
