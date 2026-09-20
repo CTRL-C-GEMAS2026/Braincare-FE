@@ -35,6 +35,9 @@ export interface Case {
   /** null kalau case dibuat dari upload gambar tunggal (bukan volume NIfTI/DICOM) */
   modality: string | null;
   volumeShape: { axial: number; coronal: number; sagittal: number } | null;
+  /** 3 huruf arah anatomis (axial,coronal,sagittal) tempat indeks slice membesar, mis.
+   * "IPL" -- null kalau berkas sumber tidak punya info orientasi. Lihat DicomVolumeViewer. */
+  axisLabels: string | null;
 }
 
 /** Case as returned by the API: raw enum fields plus the computed analyzing flag. */

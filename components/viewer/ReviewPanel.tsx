@@ -2,6 +2,7 @@
 
 import { useState } from 'react';
 import { apiPatch } from '@/lib/api/client';
+import { toast } from '@/lib/hooks/useToast';
 import type { CaseDTO } from '@/types/case';
 
 function formatTimestamp(iso: string) {
@@ -30,9 +31,11 @@ export function ReviewPanel({
       onUpdated(updated);
       setShowDisagreeForm(false);
       setNote('');
+      toast.success(body.action === 'reset' ? 'Tinjauan direset.' : 'Tinjauan tersimpan.');
     } catch (err) {
       console.error('Gagal menyimpan tinjauan:', err);
       setError('Gagal menyimpan tinjauan. Coba lagi.');
+      toast.error('Gagal menyimpan tinjauan.');
     } finally {
       setBusy(false);
     }

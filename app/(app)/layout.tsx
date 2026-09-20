@@ -7,6 +7,7 @@ import { Sidebar } from '@/components/layout/Sidebar';
 import { Header } from '@/components/layout/Header';
 import { BottomNav } from '@/components/layout/BottomNav';
 import { LoadingSpinner } from '@/components/ui/LoadingSpinner';
+import { ToastHost } from '@/components/ui/ToastHost';
 
 export default function AppLayout({ children }: { children: React.ReactNode }) {
   const { user, ready } = useAuth();
@@ -32,6 +33,7 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
         <div className="min-h-0 flex-1 overflow-auto pb-16 md:pb-0">{children}</div>
       </div>
       <BottomNav />
+      <ToastHost />
     </div>
   );
 }

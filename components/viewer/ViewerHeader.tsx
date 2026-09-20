@@ -2,6 +2,7 @@
 
 import { useRouter } from 'next/navigation';
 import { Badge } from '@/components/ui/Badge';
+import { BookmarkButton } from '@/components/ui/BookmarkButton';
 import { severityBadge, statusBadge } from '@/lib/utils/badge';
 import type { CaseDTO } from '@/types/case';
 
@@ -30,6 +31,7 @@ export function ViewerHeader({ activeCase, cameFrom }: { activeCase: CaseDTO; ca
         </div>
       </div>
       <div className="flex items-center gap-2.5">
+        <BookmarkButton caseId={activeCase.id} className="border border-slate-200 bg-white" />
         <button
           onClick={() => window.print()}
           className="flex items-center gap-1.75 gap-[7px] rounded-[9px] border border-slate-200 bg-white px-2.5 py-2 text-xs font-semibold text-slate-700 hover:bg-slate-50 md:px-3.5"

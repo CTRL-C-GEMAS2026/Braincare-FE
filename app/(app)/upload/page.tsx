@@ -7,6 +7,7 @@ import clsx from 'clsx';
 import { apiUpload, ApiError } from '@/lib/api/client';
 import { Dropzone } from '@/components/upload/Dropzone';
 import { Button } from '@/components/ui/Button';
+import { toast } from '@/lib/hooks/useToast';
 import type { CaseDTO } from '@/types/case';
 
 const ALLOWED_IMAGE_MIME_TYPES = ['image/png', 'image/jpeg'];
@@ -75,7 +76,9 @@ export default function UploadPage() {
       router.push(`/viewer/${created.id}`);
     } catch (err) {
       console.error('Gagal memulai analisis:', err);
-      setError(err instanceof ApiError ? err.message : 'Gagal memulai analisis. Periksa kembali data pasien dan coba lagi.');
+      const message = err instanceof ApiError ? err.message : 'Gagal memulai analisis. Periksa kembali data pasien dan coba lagi.';
+      setError(message);
+      toast.error(message);
     } finally {
       setStarting(false);
     }

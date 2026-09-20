@@ -2,11 +2,12 @@
 
 import { useRouter } from 'next/navigation';
 import { Badge } from '@/components/ui/Badge';
+import { BookmarkButton } from '@/components/ui/BookmarkButton';
 import { EmptyState } from '@/components/ui/EmptyState';
 import { reviewBadge, severityBadge } from '@/lib/utils/badge';
 import type { CaseDTO } from '@/types/case';
 
-const COLS = '1.6fr 1fr 1.2fr 1fr 1.2fr 90px';
+const COLS = '32px 1.6fr 1fr 1.2fr 1fr 1.2fr 90px';
 
 export function HistoryTable({ cases }: { cases: CaseDTO[] }) {
   const router = useRouter();
@@ -17,6 +18,7 @@ export function HistoryTable({ cases }: { cases: CaseDTO[] }) {
         className="hidden gap-4 border-b border-slate-200 bg-slate-50 px-5 py-3 text-xs font-semibold uppercase tracking-wide text-slate-500 md:grid"
         style={{ gridTemplateColumns: COLS }}
       >
+        <div />
         <div>Pasien</div>
         <div>Tanggal</div>
         <div>Jenis Tumor</div>
@@ -34,9 +36,12 @@ export function HistoryTable({ cases }: { cases: CaseDTO[] }) {
             className="relative flex flex-col gap-2 border-b border-slate-100 py-4 pl-5 pr-5 last:border-b-0 md:grid md:items-center md:gap-4"
             style={{ gridTemplateColumns: COLS }}
           >
-            <div className="pr-28 md:pr-0">
-              <div className="text-sm font-semibold">{c.name}</div>
-              <div className="mt-0.5 text-xs text-slate-500">{c.mrn}</div>
+            <div className="flex items-center gap-2 pr-28 md:contents md:pr-0">
+              <BookmarkButton caseId={c.id} />
+              <div>
+                <div className="text-sm font-semibold">{c.name}</div>
+                <div className="mt-0.5 text-xs text-slate-500">{c.mrn}</div>
+              </div>
             </div>
             <div className="flex flex-wrap items-center gap-x-1.5 text-xs text-slate-500 md:contents">
               <span className="font-mono md:text-[13px] md:text-slate-700">{c.examDate}</span>

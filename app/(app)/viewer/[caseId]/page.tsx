@@ -11,6 +11,7 @@ import { AnalyzingState } from '@/components/viewer/AnalyzingState';
 import { MriStage } from '@/components/viewer/MriStage';
 import { ViewerToolbar } from '@/components/viewer/ViewerToolbar';
 import { DicomVolumeViewer } from '@/components/viewer/DicomVolumeViewer';
+import { Mesh3DViewer } from '@/components/viewer/Mesh3DViewer';
 import { NarrativePanel } from '@/components/viewer/NarrativePanel';
 import { ReviewPanel } from '@/components/viewer/ReviewPanel';
 import type { CaseDTO, XaiLayer } from '@/types/case';
@@ -23,7 +24,7 @@ export default function ViewerPage({ params }: { params: Promise<{ caseId: strin
   const [layerSeg, setLayerSeg] = useState(true);
   const [xaiLayer, setXaiLayer] = useState<XaiLayer>('gradcam');
   const [zoom, setZoom] = useState(1);
-  const [stageMode, setStageMode] = useState<'ai' | 'volume'>('ai');
+  const [stageMode, setStageMode] = useState<'ai' | 'volume' | 'mesh3d'>('ai');
 
   const key = `/api/cases/${caseId}`;
   const { data: activeCase } = useSWR<CaseDTO>(key, fetcher, {
@@ -46,7 +47,7 @@ export default function ViewerPage({ params }: { params: Promise<{ caseId: strin
       <ViewerHeader activeCase={activeCase} cameFrom={cameFrom} />
 
       {activeCase.isAnalyzing ? (
-        <AnalyzingState />
+        <AnalyzingState activeCase={activeCase} />
       ) : (
         <div className="flex flex-col md:min-h-0 md:flex-1 md:flex-row">
           <div className="flex min-w-0 flex-col bg-theater-950 md:flex-1">
@@ -70,11 +71,24 @@ export default function ViewerPage({ params }: { params: Promise<{ caseId: strin
                 >
                   Jelajahi Volume
                 </button>
+                <button
+                  onClick={() => setStageMode('mesh3d')}
+                  className={clsx(
+                    'rounded-lg px-3 py-1.5 text-xs font-semibold transition-colors',
+                    stageMode === 'mesh3d' ? 'bg-brand-600 text-white' : 'bg-theater-800 text-slate-400 hover:text-white'
+                  )}
+                >
+                  Tampilan 3D
+                </button>
               </div>
             )}
             {stageMode === 'volume' && activeCase.volumeShape ? (
               <div className="flex h-[45vh] md:h-auto md:flex-1">
                 <DicomVolumeViewer activeCase={activeCase} />
+              </div>
+            ) : stageMode === 'mesh3d' && activeCase.volumeShape ? (
+              <div className="flex h-[45vh] md:h-auto md:flex-1">
+                <Mesh3DViewer activeCase={activeCase} />
               </div>
             ) : (
               <>

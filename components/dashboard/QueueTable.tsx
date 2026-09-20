@@ -2,6 +2,7 @@
 
 import { useRouter } from 'next/navigation';
 import { Badge } from '@/components/ui/Badge';
+import { EmptyState } from '@/components/ui/EmptyState';
 import { severityBadge, statusBadge } from '@/lib/utils/badge';
 import type { CaseDTO } from '@/types/case';
 
@@ -56,6 +57,13 @@ export function QueueTable({ cases }: { cases: CaseDTO[] }) {
           </div>
         );
       })}
+
+      {cases.length === 0 && (
+        <EmptyState
+          title="Belum ada kasus di antrian"
+          description="Unggah pemeriksaan MRI baru untuk mulai dianalisis oleh AI."
+        />
+      )}
     </div>
   );
 }
