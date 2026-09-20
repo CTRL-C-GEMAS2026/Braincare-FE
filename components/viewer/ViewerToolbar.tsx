@@ -39,6 +39,7 @@ export function ViewerToolbar({
   onZoomIn,
   onZoomOut,
   onZoomReset,
+  onJumpToVolume,
 }: {
   activeCase: CaseDTO;
   layerSeg: boolean;
@@ -49,10 +50,11 @@ export function ViewerToolbar({
   onZoomIn: () => void;
   onZoomOut: () => void;
   onZoomReset: () => void;
+  onJumpToVolume?: () => void;
 }) {
   return (
     <div className="flex flex-shrink-0 flex-wrap items-center justify-between gap-y-2 bg-theater-900 px-5 py-3">
-      <div className="flex flex-wrap gap-2.5">
+      <div className="flex flex-wrap items-center gap-2.5">
         <Chip on={layerSeg} dotColor="#3B82F6" label="Segmentasi Tumor" onClick={onToggleSeg} />
         {activeCase.gradcamUrl !== null && (
           <Chip
@@ -69,6 +71,14 @@ export function ViewerToolbar({
             label="Attention Weight Map"
             onClick={() => onSelectXai('attention')}
           />
+        )}
+        {onJumpToVolume && (
+          <button
+            onClick={onJumpToVolume}
+            className="rounded-[9px] border border-theater-border bg-theater-800 px-3.5 py-2 text-[12.5px] font-semibold text-slate-300 hover:text-white"
+          >
+            Jelajahi slice ini di Volume →
+          </button>
         )}
       </div>
       <div className="flex items-center gap-2">

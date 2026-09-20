@@ -25,6 +25,7 @@ export default function ViewerPage({ params }: { params: Promise<{ caseId: strin
   const [xaiLayer, setXaiLayer] = useState<XaiLayer>('gradcam');
   const [zoom, setZoom] = useState(1);
   const [stageMode, setStageMode] = useState<'ai' | 'volume' | 'mesh3d'>('ai');
+  const [volumeJump, setVolumeJump] = useState<{ index: number; overlay: 'mask' } | null>(null);
 
   const key = `/api/cases/${caseId}`;
   const { data: activeCase } = useSWR<CaseDTO>(key, fetcher, {
@@ -63,7 +64,10 @@ export default function ViewerPage({ params }: { params: Promise<{ caseId: strin
                   Hasil Analisis AI
                 </button>
                 <button
-                  onClick={() => setStageMode('volume')}
+                  onClick={() => {
+                    setVolumeJump(null);
+                    setStageMode('volume');
+                  }}
                   className={clsx(
                     'rounded-lg px-3 py-1.5 text-xs font-semibold transition-colors',
                     stageMode === 'volume' ? 'bg-brand-600 text-white' : 'bg-theater-800 text-slate-400 hover:text-white'
@@ -84,7 +88,11 @@ export default function ViewerPage({ params }: { params: Promise<{ caseId: strin
             )}
             {stageMode === 'volume' && activeCase.volumeShape ? (
               <div className="flex h-[45vh] md:h-auto md:flex-1">
-                <DicomVolumeViewer activeCase={activeCase} />
+                <DicomVolumeViewer
+                  activeCase={activeCase}
+                  initialIndex={volumeJump?.index}
+                  initialOverlay={volumeJump?.overlay}
+                />
               </div>
             ) : stageMode === 'mesh3d' && activeCase.volumeShape ? (
               <div className="flex h-[45vh] md:h-auto md:flex-1">
@@ -102,6 +110,14 @@ export default function ViewerPage({ params }: { params: Promise<{ caseId: strin
                   onZoomIn={() => setZoom((z) => Math.min(2.2, z + 0.2))}
                   onZoomOut={() => setZoom((z) => Math.max(0.6, z - 0.2))}
                   onZoomReset={() => setZoom(1)}
+                  onJumpToVolume={
+                    activeCase.volumeShape && activeCase.bestSliceIndex !== null
+                      ? () => {
+                          setVolumeJump({ index: activeCase.bestSliceIndex!, overlay: 'mask' });
+                          setStageMode('volume');
+                        }
+                      : undefined
+                  }
                 />
                 <div className="relative flex h-[45vh] md:h-auto md:flex-1">
                   <MriStage activeCase={activeCase} zoom={zoom} layerSeg={layerSeg} xaiLayer={xaiLayer} />

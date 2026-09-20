@@ -56,16 +56,25 @@ function edgeLabelsFor(plane: Plane, axisLabels: string | null): EdgeLabels {
 
 type Shape = { axial: number; coronal: number; sagittal: number };
 
-export function DicomVolumeViewer({ activeCase }: { activeCase: CaseDTO }) {
+export function DicomVolumeViewer({
+  activeCase,
+  initialIndex,
+  initialOverlay = 'none',
+}: {
+  activeCase: CaseDTO;
+  /** Slice axial awal (mis. bestSliceIndex, lihat page.tsx) -- default tengah volume kalau tidak diisi. */
+  initialIndex?: number;
+  initialOverlay?: Overlay;
+}) {
   const shape = activeCase.volumeShape;
   const [layout, setLayout] = useState<Layout>('single');
   const [plane, setPlane] = useState<Plane>('axial');
   const [indices, setIndices] = useState<Shape>(() => ({
-    axial: Math.floor((shape?.axial ?? 1) / 2),
+    axial: initialIndex ?? Math.floor((shape?.axial ?? 1) / 2),
     coronal: Math.floor((shape?.coronal ?? 1) / 2),
     sagittal: Math.floor((shape?.sagittal ?? 1) / 2),
   }));
-  const [overlay, setOverlay] = useState<Overlay>('none');
+  const [overlay, setOverlay] = useState<Overlay>(initialOverlay);
 
   if (!shape) return null;
 
