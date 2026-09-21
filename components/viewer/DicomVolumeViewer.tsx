@@ -7,7 +7,9 @@ import { Chip } from '@/components/viewer/ViewerToolbar';
 import type { CaseDTO } from '@/types/case';
 
 type Plane = 'axial' | 'coronal' | 'sagittal';
-type Overlay = 'none' | 'mask' | 'gradcam' | 'attention';
+// ponytail: 'attention' dihapus -- backend sekarang UNet v2 (plain U-Net), tidak punya
+// attention gate seperti AttentionUNet lama, jadi tidak ada peta attention buat dikirim.
+type Overlay = 'none' | 'mask' | 'gradcam';
 type Layout = 'single' | 'triplanar';
 
 const PLANES: Plane[] = ['axial', 'coronal', 'sagittal'];
@@ -149,12 +151,6 @@ export function DicomVolumeViewer({
       <div className="flex flex-wrap gap-2 border-b border-theater-border px-4 py-2.5">
         <Chip on={overlay === 'mask'} dotColor="#3B82F6" label="Segmentasi Tumor" onClick={() => selectOverlay('mask')} />
         <Chip on={overlay === 'gradcam'} dotColor="#F97316" label="Grad-CAM (XAI)" onClick={() => selectOverlay('gradcam')} />
-        <Chip
-          on={overlay === 'attention'}
-          dotColor="#A855F7"
-          label="Attention Weight Map"
-          onClick={() => selectOverlay('attention')}
-        />
       </div>
 
       <div

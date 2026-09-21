@@ -2,7 +2,7 @@
 
 import { useEffect, useRef } from 'react';
 import * as THREE from 'three';
-import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls.js';
+import { TrackballControls } from 'three/examples/jsm/controls/TrackballControls.js';
 import useSWR from 'swr';
 import { fetcher } from '@/lib/api/client';
 import { LoadingSpinner } from '@/components/ui/LoadingSpinner';
@@ -53,8 +53,8 @@ function Scene({ data }: { data: Mesh3DResponse }) {
     renderer.setSize(container.clientWidth, container.clientHeight);
     container.appendChild(renderer.domElement);
 
-    const controls = new OrbitControls(camera, renderer.domElement);
-    controls.enableDamping = true;
+    const controls = new TrackballControls(camera, renderer.domElement);
+    controls.noPan = true;
 
     scene.add(new THREE.AmbientLight(0xffffff, 0.7));
     const dirLight = new THREE.DirectionalLight(0xffffff, 0.8);
@@ -94,6 +94,7 @@ function Scene({ data }: { data: Mesh3DResponse }) {
       camera.aspect = container.clientWidth / container.clientHeight;
       camera.updateProjectionMatrix();
       renderer.setSize(container.clientWidth, container.clientHeight);
+      controls.handleResize();
     });
     resizeObserver.observe(container);
 
