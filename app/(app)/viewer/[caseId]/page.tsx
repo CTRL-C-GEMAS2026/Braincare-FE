@@ -1,10 +1,11 @@
 'use client';
 
-import { use, useState } from 'react';
+import { use, useCallback, useState } from 'react';
 import { useSearchParams } from 'next/navigation';
 import useSWR, { mutate } from 'swr';
 import clsx from 'clsx';
 import { fetcher } from '@/lib/api/client';
+import { useNarrativeStream } from '@/lib/hooks/useNarrativeStream';
 import { LoadingSpinner } from '@/components/ui/LoadingSpinner';
 import { ViewerHeader } from '@/components/viewer/ViewerHeader';
 import { AnalyzingState } from '@/components/viewer/AnalyzingState';
@@ -28,9 +29,14 @@ export default function ViewerPage({ params }: { params: Promise<{ caseId: strin
   const [volumeJump, setVolumeJump] = useState<{ index: number; overlay: 'mask' } | null>(null);
 
   const key = `/api/cases/${caseId}`;
-  const { data: activeCase } = useSWR<CaseDTO>(key, fetcher, {
+  const { data: activeCase, mutate: updateCase } = useSWR<CaseDTO>(key, fetcher, {
     refreshInterval: (data) => (data?.isAnalyzing ? 700 : 0),
   });
+  const handleNarrativeComplete = useCallback((updated: CaseDTO) => {
+    void updateCase(updated, false);
+    void mutate('/api/cases');
+  }, [updateCase]);
+  const streamingNarrative = useNarrativeStream(caseId, activeCase?.isAnalyzing ?? false, handleNarrativeComplete);
 
   if (!activeCase) {
     return (
@@ -48,7 +54,7 @@ export default function ViewerPage({ params }: { params: Promise<{ caseId: strin
       <ViewerHeader activeCase={activeCase} cameFrom={cameFrom} />
 
       {activeCase.isAnalyzing ? (
-        <AnalyzingState activeCase={activeCase} />
+        <AnalyzingState activeCase={activeCase} narrative={streamingNarrative} />
       ) : (
         <div className="flex flex-col md:min-h-0 md:flex-1 md:flex-row">
           <div className="flex min-w-0 flex-col bg-theater-950 md:flex-1">

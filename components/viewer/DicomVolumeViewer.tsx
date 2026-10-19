@@ -143,8 +143,19 @@ export function DicomVolumeViewer({
             ))}
           </div>
         </div>
-        <div className="font-mono text-[11px] text-slate-500">
+        <div
+          className="font-mono text-[11px] text-slate-500"
+          title={activeCase.affineMatrix ? `Affine:\n${activeCase.affineMatrix.map((r) => r.map((v) => v.toFixed(3)).join('  ')).join('\n')}` : undefined}
+        >
           {activeCase.modality ?? 'N/A'} · {shape.axial}×{shape.coronal}×{shape.sagittal} voxel
+          {activeCase.voxelSpacing && (
+            <>
+              {' '}
+              · {activeCase.voxelSpacing.axial.toFixed(2)}×{activeCase.voxelSpacing.coronal.toFixed(2)}×
+              {activeCase.voxelSpacing.sagittal.toFixed(2)} mm
+            </>
+          )}
+          {activeCase.datatype && <> · {activeCase.datatype}</>}
         </div>
       </div>
 

@@ -37,6 +37,7 @@ Antarmuka radiolog untuk BrainCare — unggah studi MRI, lihat hasil analisis AI
 ## Integrasi dengan Backend
 
 - Semua pemanggilan API lewat `lib/api/client.ts`, yang menambahkan header `Authorization: Bearer <token>` otomatis dari sesi tersimpan (`lib/auth/session.ts`) dan mengarah ke `NEXT_PUBLIC_API_BASE_URL`.
+- Saat analisis berjalan, viewer menerima SSE dari `GET /api/cases/{id}/narrative/stream` melalui `fetch` berautentikasi. Narasi sementara tampil bertahap dan diganti dengan teks final setelah validasi backend. Koneksi terputus dicoba kembali; polling kasus tetap aktif. Langganan dibatalkan saat berpindah kasus atau halaman.
 - Sesi (token + info user) disimpan di `localStorage` setelah login, dibaca oleh `lib/auth/AuthContext.tsx`. Token kedaluwarsa/invalid (respons 401) otomatis menghapus sesi dan mengarahkan ke `/login`.
 - `app/(app)/layout.tsx` adalah route guard: halaman di bawah `(app)` (`dashboard`, `upload`, `history`, `profile`, `viewer`) hanya bisa diakses setelah login.
 - Halaman **Unggah** mengumpulkan data pasien (nama, MRN, umur, jenis kelamin, tanggal periksa) karena backend mensyaratkan data ini untuk membuat kasus baru — ini bukan sekadar metadata unggahan, tapi identitas rekam medis yang tervalidasi di server.
@@ -46,3 +47,9 @@ Antarmuka radiolog untuk BrainCare — unggah studi MRI, lihat hasil analisis AI
 ## Deployment
 
 Saat deploy (mis. Vercel), set environment variable `NEXT_PUBLIC_API_BASE_URL` ke URL backend produksi, dan pastikan `CORS_ORIGINS` di backend menyertakan origin domain frontend ini.
+
+Reverse proxy backend harus meneruskan SSE tanpa buffering. Uji parser streaming tanpa browser:
+
+```bash
+node --experimental-strip-types --test tests/sse.test.mjs
+```

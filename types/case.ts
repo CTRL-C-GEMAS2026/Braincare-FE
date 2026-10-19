@@ -42,6 +42,14 @@ export interface Case {
   /** 3 huruf arah anatomis (axial,coronal,sagittal) tempat indeks slice membesar, mis.
    * "IPL" -- null kalau berkas sumber tidak punya info orientasi. Lihat DicomVolumeViewer. */
   axisLabels: string | null;
+  /** Ukuran fisik voxel dalam mm (pixdim NIfTI / PixelSpacing+SliceThickness DICOM) --
+   * null kalau case bukan dari volume. */
+  voxelSpacing: { axial: number; coronal: number; sagittal: number } | null;
+  /** Matriks 4x4 voxel->koordinat ruang nyata (RAS+ mm) dari header NIfTI -- null untuk
+   * DICOM atau upload gambar tunggal. */
+  affineMatrix: number[][] | null;
+  /** Tipe data numerik berkas sumber sebelum dinormalisasi, mis. "int16"/"float32". */
+  datatype: string | null;
 }
 
 /** Case as returned by the API: raw enum fields plus the computed analyzing flag. */
