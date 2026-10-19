@@ -1,7 +1,7 @@
 'use client';
 
 import { useState } from 'react';
-import { apiPatch } from '@/lib/api/client';
+import { apiPatch, ApiError } from '@/lib/api/client';
 import { toast } from '@/lib/hooks/useToast';
 import type { CaseDTO } from '@/types/case';
 
@@ -14,27 +14,30 @@ function formatTimestamp(iso: string) {
 export function ReviewPanel({
   activeCase,
   onUpdated,
+  editingNarrative = false,
 }: {
   activeCase: CaseDTO;
   onUpdated: (updated: CaseDTO) => void;
+  editingNarrative?: boolean;
 }) {
   const [showDisagreeForm, setShowDisagreeForm] = useState(false);
   const [note, setNote] = useState('');
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const locked = busy || editingNarrative || activeCase.reportState === 'analysis_failed' || activeCase.isAnalyzing;
 
   async function act(body: { action: 'agree' } | { action: 'disagree'; note: string } | { action: 'reset' }) {
     setError(null);
     setBusy(true);
     try {
-      const updated = await apiPatch<CaseDTO>(`/api/cases/${activeCase.id}/review`, body);
+      const updated = await apiPatch<CaseDTO>(`/api/cases/${activeCase.id}/review`, { ...body, expectedRevision: activeCase.reportRevision });
       onUpdated(updated);
       setShowDisagreeForm(false);
       setNote('');
       toast.success(body.action === 'reset' ? 'Tinjauan direset.' : 'Tinjauan tersimpan.');
     } catch (err) {
       console.error('Gagal menyimpan tinjauan:', err);
-      setError('Gagal menyimpan tinjauan. Coba lagi.');
+      setError(err instanceof ApiError ? err.message : 'Gagal menyimpan tinjauan. Coba lagi.');
       toast.error('Gagal menyimpan tinjauan.');
     } finally {
       setBusy(false);
@@ -50,25 +53,27 @@ export function ReviewPanel({
         <div className="text-[13px] font-bold text-slate-900">Tinjauan Dokter</div>
       </div>
       <div className="mb-3.5 text-xs text-slate-400">
-        Konfirmasi hasil AI, atau ajukan koreksi jika ada ketidaksesuaian.
+        {editingNarrative ? 'Simpan atau batalkan suntingan narasi sebelum memberi persetujuan.'
+          : activeCase.reportState === 'analysis_failed' ? 'Analisis belum berhasil. Unggah ulang studi sebelum meninjau laporan.'
+            : 'Setujui narasi dan pengukuran pada revisi ini untuk memfinalisasi laporan, atau minta koreksi.'}
       </div>
 
       {error && <div className="mb-3 text-[12.5px] font-medium text-danger-700">{error}</div>}
 
-      {activeCase.review === 'none' && !showDisagreeForm && (
+      {(activeCase.review === 'none' || (activeCase.review === 'agree' && !activeCase.isFinalized)) && !showDisagreeForm && (
         <div className="animate-bc-fade-in flex gap-2.5">
           <button
-            disabled={busy}
+            disabled={locked}
             onClick={() => act({ action: 'agree' })}
             className="flex flex-1 items-center justify-center gap-1.5 rounded-xl border border-success-200 bg-success-50 py-3 text-[13px] font-semibold text-success-700 transition-transform active:scale-[0.98]"
           >
             <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="#15803D" strokeWidth="2.4">
               <path d="M20 6L9 17l-5-5" />
             </svg>
-            Setuju
+            Setuju &amp; Finalisasi
           </button>
           <button
-            disabled={busy}
+            disabled={locked}
             onClick={() => setShowDisagreeForm(true)}
             className="flex flex-1 items-center justify-center gap-1.5 rounded-xl border border-danger-200 bg-danger-50 py-3 text-[13px] font-semibold text-danger-700 transition-transform active:scale-[0.98]"
           >
@@ -99,7 +104,7 @@ export function ReviewPanel({
               Batal
             </button>
             <button
-              disabled={busy || !note.trim()}
+              disabled={locked || !note.trim()}
               onClick={() => act({ action: 'disagree', note })}
               className="flex-1 rounded-xl bg-danger-700 py-2.5 text-[13px] font-semibold text-white disabled:opacity-50"
             >
@@ -109,7 +114,7 @@ export function ReviewPanel({
         </div>
       )}
 
-      {activeCase.review === 'agree' && (
+      {activeCase.isFinalized && (
         <div className="animate-bc-fade-in flex items-center gap-3 rounded-xl border border-success-200 bg-success-50 px-3.5 py-3">
           <div className="flex h-6.5 w-6.5 h-[26px] w-[26px] flex-shrink-0 items-center justify-center rounded-full bg-success-100">
             <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="#15803D" strokeWidth="3">
@@ -117,10 +122,11 @@ export function ReviewPanel({
             </svg>
           </div>
           <div className="flex-1 text-[12.5px] font-semibold text-success-700">
-            Dikonfirmasi sesuai hasil AI{activeCase.reviewedAt ? ` · ${formatTimestamp(activeCase.reviewedAt)}` : ''}
+            Laporan final · revisi {activeCase.reportRevision}{activeCase.reviewedAt ? ` · ${formatTimestamp(activeCase.reviewedAt)}` : ''}
+            {activeCase.reviewerName && <div className="mt-1 text-[11px] font-normal">Disetujui {activeCase.reviewerName}</div>}
           </div>
-          <button onClick={() => act({ action: 'reset' })} className="text-xs text-success-700 underline">
-            Ubah
+          <button disabled={locked} onClick={() => act({ action: 'reset' })} className="text-xs text-success-700 underline disabled:opacity-50">
+            Buka kembali
           </button>
         </div>
       )}
@@ -134,7 +140,7 @@ export function ReviewPanel({
               </svg>
             </div>
             <div className="flex-1 text-[12.5px] font-semibold text-danger-700">Ditandai perlu peninjauan ulang</div>
-            <button onClick={() => act({ action: 'reset' })} className="text-xs text-danger-700 underline">
+            <button disabled={locked} onClick={() => act({ action: 'reset' })} className="text-xs text-danger-700 underline disabled:opacity-50">
               Ubah
             </button>
           </div>

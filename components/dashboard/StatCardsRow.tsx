@@ -13,7 +13,7 @@ export function StatCardsRow({ cases }: { cases: CaseDTO[] }) {
   const total = cases.length;
   const waiting = cases.filter((c) => c.status === 'menunggu' || c.status === 'proses').length;
   const attention = cases.filter((c) => c.severity === 'tinggi' || c.status === 'perlu_review').length;
-  const done = cases.filter((c) => c.status === 'selesai').length;
+  const done = cases.filter((c) => c.isFinalized).length;
 
   return (
     <div className="mb-6 grid grid-cols-2 gap-px overflow-hidden rounded-2xl border border-slate-200 bg-slate-200 shadow-card md:flex">

@@ -19,6 +19,10 @@ import type { CaseDTO, XaiLayer } from '@/types/case';
 
 export default function ViewerPage({ params }: { params: Promise<{ caseId: string }> }) {
   const { caseId } = use(params);
+  return <ViewerContent key={caseId} caseId={caseId} />;
+}
+
+function ViewerContent({ caseId }: { caseId: string }) {
   const searchParams = useSearchParams();
   const cameFrom = searchParams.get('from') ?? 'dashboard';
 
@@ -26,17 +30,18 @@ export default function ViewerPage({ params }: { params: Promise<{ caseId: strin
   const [xaiLayer, setXaiLayer] = useState<XaiLayer>('gradcam');
   const [zoom, setZoom] = useState(1);
   const [stageMode, setStageMode] = useState<'ai' | 'volume' | 'mesh3d'>('ai');
+  const [editingNarrative, setEditingNarrative] = useState(false);
   const [volumeJump, setVolumeJump] = useState<{ index: number; overlay: 'mask' } | null>(null);
 
   const key = `/api/cases/${caseId}`;
   const { data: activeCase, mutate: updateCase } = useSWR<CaseDTO>(key, fetcher, {
     refreshInterval: (data) => (data?.isAnalyzing ? 700 : 0),
   });
-  const handleNarrativeComplete = useCallback((updated: CaseDTO) => {
+  const handleCaseUpdated = useCallback((updated: CaseDTO) => {
     void updateCase(updated, false);
     void mutate('/api/cases');
   }, [updateCase]);
-  const streamingNarrative = useNarrativeStream(caseId, activeCase?.isAnalyzing ?? false, handleNarrativeComplete);
+  const streamingNarrative = useNarrativeStream(caseId, activeCase?.isAnalyzing ?? false, handleCaseUpdated);
 
   if (!activeCase) {
     return (
@@ -50,8 +55,9 @@ export default function ViewerPage({ params }: { params: Promise<{ caseId: strin
     setXaiLayer((current) => (current === layer ? 'none' : layer));
 
   return (
-    <div id="bc-print-area" className="flex flex-col md:h-full">
-      <ViewerHeader activeCase={activeCase} cameFrom={cameFrom} />
+    <div id="bc-print-area" className="flex flex-col md:h-full" data-finalized={activeCase.isFinalized && !editingNarrative ? 'true' : 'false'}>
+      <div className="bc-print-notice hidden">Untuk laporan resmi, unduh PDF Final setelah dokter menyetujui revisi laporan. Tampilan aplikasi ini bukan laporan final.</div>
+      <ViewerHeader activeCase={activeCase} cameFrom={cameFrom} editingNarrative={editingNarrative} />
 
       {activeCase.isAnalyzing ? (
         <AnalyzingState activeCase={activeCase} narrative={streamingNarrative} />
@@ -133,13 +139,11 @@ export default function ViewerPage({ params }: { params: Promise<{ caseId: strin
           </div>
 
           <div className="flex w-full flex-shrink-0 flex-col border-t border-slate-200 md:w-[400px] md:border-l md:border-t-0">
-            <NarrativePanel activeCase={activeCase} xaiLayer={xaiLayer} />
+            <NarrativePanel activeCase={activeCase} xaiLayer={xaiLayer} onUpdated={handleCaseUpdated} onEditingChange={setEditingNarrative} />
             <ReviewPanel
               activeCase={activeCase}
-              onUpdated={(updated) => {
-                mutate(key, updated, false);
-                mutate('/api/cases');
-              }}
+              onUpdated={handleCaseUpdated}
+              editingNarrative={editingNarrative}
             />
           </div>
         </div>

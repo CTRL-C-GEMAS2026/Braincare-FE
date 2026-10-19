@@ -101,3 +101,15 @@ export async function fetchBlob(path: string): Promise<Blob | null> {
   }
   return res.blob();
 }
+
+export async function fetchReportPdf(caseId: string, revision: number): Promise<Blob> {
+  const res = await fetch(`${API_BASE_URL}/api/cases/${encodeURIComponent(caseId)}/report.pdf?revision=${revision}`, {
+    headers: { ...authHeader(), Accept: 'application/pdf' },
+    cache: 'no-store',
+  });
+  if (!res.ok) await handle(res);
+  if (!res.headers.get('content-type')?.startsWith('application/pdf')) {
+    throw new ApiError('Respons laporan bukan berkas PDF.');
+  }
+  return res.blob();
+}

@@ -75,5 +75,6 @@
   body * { visibility: hidden; }
   #bc-print-area, #bc-print-area * { visibility: visible; }
   #bc-print-area { position: absolute; left: 0; top: 0; width: 100%; height: auto !important; overflow: visible !important; }
-  #bc-print-area button, #bc-print-area input { display: none !important; }
+  #bc-print-area > * { display: none !important; }
+  #bc-print-area > .bc-print-notice { display: block !important; padding: 24px; }
 }
