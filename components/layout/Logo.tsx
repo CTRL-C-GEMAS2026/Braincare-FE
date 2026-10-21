@@ -3,9 +3,8 @@ export function LogoMark({ size = 24 }: { size?: number }) {
     <img 
       src="/logo-braincare.png" 
       alt="Braincare Logo" 
-      width={size} 
-      height={size} 
-      style={{ objectFit: 'contain' }} // Memastikan gambar tidak terdistorsi
+      width={size}
+      style={{ height: 'auto' }} // Pertahankan rasio asli gambar (bukan persegi)
     />
   );
 }

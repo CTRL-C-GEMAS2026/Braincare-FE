@@ -16,8 +16,9 @@ export function Sidebar() {
 
   return (
     <div className="hidden w-[76px] flex-shrink-0 flex-col items-center gap-7 border-r border-slate-200 bg-slate-50 py-5 md:flex">
-      <div className="flex h-9 w-9 items-center justify-center rounded-[9px] bg-brand-600 shadow-cta">
-        <LogoMark size={20} />
+      <div className="flex flex-col items-center gap-1">
+        <LogoMark size={40} />
+        <span className="text-[10px] font-bold tracking-tight text-brand-700">BrainCare</span>
       </div>
       {NAV_ITEMS.map((item) => {
         const active = pathname?.startsWith(item.href);
