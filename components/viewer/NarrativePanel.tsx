@@ -5,6 +5,7 @@ import { apiPatch, ApiError } from '@/lib/api/client';
 import { toast } from '@/lib/hooks/useToast';
 import { RegionSummary } from '@/components/viewer/RegionSummary';
 import { AuditHistory } from '@/components/viewer/AuditHistory';
+import { ChatPanel } from '@/components/viewer/ChatPanel';
 import type { CaseDTO, XaiLayer } from '@/types/case';
 
 function InfoCard({ label, value }: { label: string; value: string }) {
@@ -125,6 +126,7 @@ export function NarrativePanel({ activeCase, xaiLayer, onUpdated, onEditingChang
           </div>
         </>
       )}
+      {activeCase.narrative && <ChatPanel key={`${activeCase.id}:${activeCase.reportRevision}`} caseId={activeCase.id} />}
       <AuditHistory caseId={activeCase.id} revision={activeCase.reportRevision} />
     </div>
   );

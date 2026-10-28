@@ -113,3 +113,36 @@ export async function fetchReportPdf(caseId: string, revision: number): Promise<
   }
   return res.blob();
 }
+
+export interface ChatTurn {
+  role: 'user' | 'assistant';
+  content: string;
+}
+
+/** Stream one assistant answer for the case; `messages` ends with the new user turn. */
+export async function streamCaseChat(
+  caseId: string,
+  messages: ChatTurn[],
+  onPartial: (text: string) => void,
+  signal: AbortSignal,
+): Promise<string> {
+  const res = await fetch(`${API_BASE_URL}/api/cases/${encodeURIComponent(caseId)}/chat`, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json', Accept: 'text/event-stream', ...authHeader() },
+    body: JSON.stringify({ messages }),
+    cache: 'no-store',
+    signal,
+  });
+  if (!res.ok) await handle(res);
+  if (!res.body || !res.headers.get('content-type')?.includes('text/event-stream')) {
+    throw new ApiError('Koneksi chat belum tersedia.');
+  }
+  let answer: string | null = null;
+  await readServerEvents(res.body, (event, data) => {
+    if (event === 'chat') onPartial((JSON.parse(data) as { text: string }).text);
+    else if (event === 'complete') answer = (JSON.parse(data) as { text: string }).text;
+    else if (event === 'error') throw new ApiError((JSON.parse(data) as { error: string }).error);
+  });
+  if (answer === null) throw new ApiError('Jawaban belum selesai.');
+  return answer;
+}
