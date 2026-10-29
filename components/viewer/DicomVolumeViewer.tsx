@@ -214,13 +214,17 @@ function PlaneView({
   const count = shape[plane];
   const url = `/api/cases/${caseId}/volume/slice?plane=${plane}&index=${index}&overlay=${overlay}`;
   const slice = useAuthenticatedImage(url, { keepPrevious: true });
-  const edges = edgeLabelsFor(plane, axisLabels);
+  const rawEdges = edgeLabelsFor(plane, axisLabels);
+  // Index baris naik ke S/A (mis. BraTS 'SPL') -> baris 0 digambar di atas sehingga gambar
+  // terbalik; flip vertikal supaya S/A selalu di atas, sesuai konvensi radiologi.
+  const flipRow = rawEdges.bottom === 'S' || rawEdges.bottom === 'A';
+  const edges = flipRow ? { ...rawEdges, top: rawEdges.bottom, bottom: rawEdges.top } : rawEdges;
 
   // Bidang lain yang jadi baris/kolom gambar ini -- posisi silang (crosshair) menandai
   // slice yang sedang aktif di kedua bidang itu, lihat komentar PLANE_AXES di atas.
   const rowPlane = AXIS_PLANES[PLANE_AXES[plane].row];
   const colPlane = AXIS_PLANES[PLANE_AXES[plane].col];
-  const rowFrac = (indices[rowPlane] + 0.5) / shape[rowPlane];
+  const rowFrac = flipRow ? 1 - (indices[rowPlane] + 0.5) / shape[rowPlane] : (indices[rowPlane] + 0.5) / shape[rowPlane];
   const colFrac = (indices[colPlane] + 0.5) / shape[colPlane];
 
   function handleWheel(e: React.WheelEvent) {
@@ -232,7 +236,8 @@ function PlaneView({
     if (!compact) return;
     const rect = e.currentTarget.getBoundingClientRect();
     const colIndex = Math.floor(((e.clientX - rect.left) / rect.width) * shape[colPlane]);
-    const rowIndex = Math.floor(((e.clientY - rect.top) / rect.height) * shape[rowPlane]);
+    const yFrac = (e.clientY - rect.top) / rect.height;
+    const rowIndex = Math.floor((flipRow ? 1 - yFrac : yFrac) * shape[rowPlane]);
     onCrosshair({ [colPlane]: colIndex, [rowPlane]: rowIndex });
   }
 
@@ -259,6 +264,7 @@ function PlaneView({
               onClick={handleImageClick}
               className={clsx(
                 'max-w-full select-none',
+                flipRow && '-scale-y-100',
                 compact ? 'max-h-[38vh] cursor-crosshair' : 'max-h-[65vh]'
               )}
               draggable={false}
