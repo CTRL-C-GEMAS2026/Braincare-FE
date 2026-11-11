@@ -6,6 +6,7 @@ import { toast } from '@/lib/hooks/useToast';
 import { RegionSummary } from '@/components/viewer/RegionSummary';
 import { AuditHistory } from '@/components/viewer/AuditHistory';
 import { ChatPanel } from '@/components/viewer/ChatPanel';
+import { tumorLabel } from '@/lib/utils/badge';
 import type { CaseDTO, XaiLayer } from '@/types/case';
 
 function InfoCard({ label, value }: { label: string; value: string }) {
@@ -72,11 +73,13 @@ export function NarrativePanel({ activeCase, xaiLayer, onUpdated, onEditingChang
       ) : (
         <>
           <div className="mb-1 text-[10px] text-slate-400">Klasifikasi model (AI)</div>
-          <div className="mb-0.5 text-base font-bold">{activeCase.tumorType}</div>
-          <div className="mb-4 text-[13px] text-slate-500">
-            Estimasi kepercayaan model:{' '}
-            <span className="font-mono font-semibold text-slate-700">{activeCase.confidence}%</span>
-          </div>
+          <div className="mb-0.5 text-base font-bold">{tumorLabel(activeCase.tumorType)}</div>
+          {activeCase.tumorType !== 'no_tumor' && (
+            <div className="mb-4 text-[13px] text-slate-500">
+              Estimasi kepercayaan model:{' '}
+              <span className="font-mono font-semibold text-slate-700">{activeCase.confidence}%</span>
+            </div>
+          )}
         </>
       )}
 

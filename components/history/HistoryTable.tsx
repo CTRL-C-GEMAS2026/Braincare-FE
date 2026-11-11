@@ -4,7 +4,7 @@ import { useRouter } from 'next/navigation';
 import { Badge } from '@/components/ui/Badge';
 import { BookmarkButton } from '@/components/ui/BookmarkButton';
 import { EmptyState } from '@/components/ui/EmptyState';
-import { reviewBadge, severityBadge } from '@/lib/utils/badge';
+import { reviewBadge, severityBadge, tumorLabel } from '@/lib/utils/badge';
 import type { CaseDTO } from '@/types/case';
 
 const COLS = '32px 1.6fr 1fr 1.2fr 1fr 1.2fr 90px';
@@ -47,7 +47,7 @@ export function HistoryTable({ cases }: { cases: CaseDTO[] }) {
               <span className="font-mono md:text-[13px] md:text-slate-700">{c.examDate}</span>
               <span className="md:text-[13px] md:text-slate-700">
                 <span className="md:hidden">· </span>
-                {c.tumorType}
+                {c.tumorType && tumorLabel(c.tumorType)}
               </span>
             </div>
             <div className="flex gap-2 md:contents">

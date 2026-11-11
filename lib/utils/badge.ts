@@ -42,3 +42,5 @@ export const SEVERITY_FILTERS: { key: Severity | 'semua'; label: string }[] = [
   { key: 'rendah', label: 'Risiko Rendah' },
   { key: 'normal', label: 'Normal' },
 ];
+
+export const tumorLabel = (type: string): string => (type === 'no_tumor' ? 'No tumor' : type);
