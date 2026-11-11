@@ -79,6 +79,11 @@ export async function apiPatch<T>(path: string, body?: unknown): Promise<T> {
   return handle<T>(res);
 }
 
+export async function apiDelete<T>(path: string): Promise<T> {
+  const res = await fetch(`${API_BASE_URL}${path}`, { method: 'DELETE', headers: { ...authHeader() } });
+  return handle<T>(res);
+}
+
 export async function apiUpload<T>(path: string, formData: FormData): Promise<T> {
   const res = await fetch(`${API_BASE_URL}${path}`, {
     method: 'POST',

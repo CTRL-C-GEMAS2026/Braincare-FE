@@ -2,7 +2,8 @@
 
 import { useRouter } from 'next/navigation';
 import { useState } from 'react';
-import { ApiError, fetchReportPdf } from '@/lib/api/client';
+import { mutate } from 'swr';
+import { ApiError, apiDelete, fetchReportPdf } from '@/lib/api/client';
 import { toast } from '@/lib/hooks/useToast';
 import { Badge } from '@/components/ui/Badge';
 import { BookmarkButton } from '@/components/ui/BookmarkButton';
@@ -24,6 +25,17 @@ export function ViewerHeader({ activeCase, cameFrom, editingNarrative = false }:
     } catch (err) {
       toast.error(err instanceof ApiError ? err.message : 'Laporan PDF gagal diunduh.');
     } finally { setDownloading(false); }
+  }
+  async function deleteCase() {
+    if (!window.confirm(`Hapus hasil pemeriksaan ${activeCase.name}? Tindakan ini tidak dapat dibatalkan.`)) return;
+    try {
+      await apiDelete(`/api/cases/${activeCase.id}`);
+      await mutate('/api/cases');
+      toast.success('Hasil pemeriksaan dihapus.');
+      router.push(cameFrom === 'history' ? '/history' : '/dashboard');
+    } catch (err) {
+      toast.error(err instanceof ApiError ? err.message : 'Hasil pemeriksaan gagal dihapus.');
+    }
   }
   const sev = activeCase.isAnalyzing ? statusBadge(activeCase.status) : severityBadge(activeCase.severity);
 
@@ -62,6 +74,19 @@ export function ViewerHeader({ activeCase, cameFrom, editingNarrative = false }:
             <path d="M9 15h6M9 18h6" />
           </svg>
           <span className="hidden md:inline">{downloading ? 'Mengunduh…' : 'Unduh PDF Final'}</span>
+        </button>
+        <button
+          onClick={() => void deleteCase()}
+          disabled={activeCase.isAnalyzing}
+          title="Hapus hasil pemeriksaan"
+          aria-label="Hapus hasil pemeriksaan"
+          data-testid="delete-case"
+          className="flex items-center gap-[7px] rounded-[9px] border border-red-200 bg-white px-2.5 py-2 text-xs font-semibold text-red-600 hover:bg-red-50 disabled:cursor-not-allowed disabled:opacity-40 md:px-3.5"
+        >
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8">
+            <path d="M3 6h18M8 6V4h8v2M6 6l1 14h10l1-14M10 11v6M14 11v6" />
+          </svg>
+          <span className="hidden md:inline">Hapus</span>
         </button>
         <Badge label={sev.label} className={sev.className} />
       </div>
